@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Litpax Service Support</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Litpax Service Portal</p>
+        <h1>Field Support Ticket System</h1>
+        <p>Technician support requests, coordinator assignment and response tracking.</p>
+      </div>
+      <div class="hero-badge">Support Desk</div>
+    </header>
+
+    <main class="grid">
+      <section class="card form-card">
+        <div class="section-head">
+          <h2>Create Support Ticket</h2>
+          <p>Technician site se issue raise karega.</p>
+        </div>
+
+        <form id="ticketForm">
+          <div class="form-grid">
+            <label>Technician Name
+              <input type="text" name="technicianName" required placeholder="Enter technician name" />
+            </label>
+
+            <label>Customer Name
+              <input type="text" name="customerName" required placeholder="Enter customer name" />
+            </label>
+
+            <label>Customer Mobile
+              <input type="tel" name="customerMobile" placeholder="Enter mobile number" />
+            </label>
+
+            <label>Location
+              <input type="text" name="location" required placeholder="Customer location" />
+            </label>
+
+            <label>Battery Model
+              <input type="text" name="batteryModel" placeholder="Battery model" />
+            </label>
+
+            <label>Serial Number
+              <input type="text" name="serialNumber" placeholder="Battery serial number" />
+            </label>
+
+            <label>Problem Type
+              <select name="problemType" required>
+                <option value="">Select problem type</option>
+                <option>BMS Issue</option>
+                <option>Charging Issue</option>
+                <option>Cell Issue</option>
+                <option>Connector Issue</option>
+                <option>Low Backup</option>
+                <option>No Output</option>
+                <option>Other</option>
+              </select>
+            </label>
+
+            <label>Priority
+              <select name="priority" required>
+                <option value="Normal">Normal</option>
+                <option value="Urgent">Urgent</option>
+                <option value="Emergency">Emergency</option>
+              </select>
+            </label>
+
+            <label class="full">Problem Details
+              <textarea name="problemDetails" rows="4" required placeholder="Issue detail likho"></textarea>
+            </label>
+          </div>
+
+          <button type="submit" id="submitBtn">Submit Ticket</button>
+          <p id="formMessage" class="message"></p>
+        </form>
+      </section>
+
+      <section class="card dashboard-card">
+        <div class="section-head row-head">
+          <div>
+            <h2>Coordinator Dashboard</h2>
+            <p>Sheet me Assigned To aur Done update karne ke baad yahan refresh karo.</p>
+          </div>
+          <button id="refreshBtn" class="secondary-btn">Refresh</button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><span>Total</span><b id="totalCount">0</b></div>
+          <div class="kpi"><span>Open</span><b id="openCount">0</b></div>
+          <div class="kpi"><span>Assigned</span><b id="assignedCount">0</b></div>
+          <div class="kpi"><span>Closed</span><b id="closedCount">0</b></div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket</th>
+                <th>Time</th>
+                <th>Technician</th>
+                <th>Customer</th>
+                <th>Problem</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Response</th>
+              </tr>
+            </thead>
+            <tbody id="ticketTable">
+              <tr><td colspan="9" class="empty">No tickets loaded</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
