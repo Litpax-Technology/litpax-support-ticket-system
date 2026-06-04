@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwD9ff6JS-Q1Ty5_uvByRtI5Y-XArc0eEuADy9yutiLpm-tQ7aGix8t9OElQJ3T7xzA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby1mjw3eCFkhANCbg1RZCcCGlzYdyHup_x3Ygg0vbQgNq_LdaJHW1TtaaTPPJDZrjyI/exec";
 
 const form = document.getElementById("supportForm");
 const submitBtn = document.getElementById("submitBtn");
@@ -37,8 +37,7 @@ form.addEventListener("submit", async function(e) {
     travelExpense:    travel,
     partsExpense:     parts,
     otherExpense:     other,
-    totalExpense:     travel + parts + other,
-    expenseNotes:     form.expenseNotes.value.trim()
+    totalExpense:     travel + parts + other
   };
 
   try {
