@@ -7,11 +7,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <div class="app-wrapper">
-
     <div class="form-card">
-
       <div class="form-header">
         <div>
           <h1>Service Support Request</h1>
@@ -19,17 +16,14 @@
         </div>
         <span>Litpax Support</span>
       </div>
-
       <form id="supportForm">
 
         <div class="section-title">Technician Details</div>
-
         <div class="form-grid">
           <div class="form-group">
             <label>Technician Name</label>
             <input type="text" name="technicianName" required />
           </div>
-
           <div class="form-group">
             <label>Technician Mobile</label>
             <input type="tel" name="technicianMobile" required />
@@ -37,18 +31,15 @@
         </div>
 
         <div class="section-title">Customer Details</div>
-
         <div class="form-grid">
           <div class="form-group">
             <label>Customer Name</label>
             <input type="text" name="customerName" required />
           </div>
-
           <div class="form-group">
             <label>Customer Mobile</label>
             <input type="tel" name="customerMobile" required />
           </div>
-
           <div class="form-group full">
             <label>Customer Location</label>
             <input type="text" name="location" required />
@@ -56,13 +47,11 @@
         </div>
 
         <div class="section-title">Battery Details</div>
-
         <div class="form-grid">
           <div class="form-group">
             <label>Battery Model</label>
             <input type="text" name="batteryModel" required />
           </div>
-
           <div class="form-group">
             <label>Battery Serial Number</label>
             <input type="text" name="serialNumber" required />
@@ -70,7 +59,6 @@
         </div>
 
         <div class="section-title">Problem Details</div>
-
         <div class="form-grid">
           <div class="form-group">
             <label>Problem Type</label>
@@ -86,7 +74,6 @@
               <option value="Other">Other</option>
             </select>
           </div>
-
           <div class="form-group">
             <label>Priority</label>
             <select name="priority" required>
@@ -96,25 +83,43 @@
               <option value="Emergency">Emergency</option>
             </select>
           </div>
-
           <div class="form-group full">
             <label>Problem Details</label>
             <textarea name="problemDetails" rows="4" required></textarea>
           </div>
         </div>
 
-        <button type="submit" id="submitBtn">
-          Submit Support Ticket
-        </button>
+        <div class="section-title expense-title">Expense Details</div>
+        <div class="expense-box">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>🚗 Travel Expense (₹)</label>
+              <input type="number" name="travelExpense" min="0" placeholder="0" oninput="calcTotal()" />
+            </div>
+            <div class="form-group">
+              <label>🔧 Parts / Material Expense (₹)</label>
+              <input type="number" name="partsExpense" min="0" placeholder="0" oninput="calcTotal()" />
+            </div>
+            <div class="form-group">
+              <label>📦 Other Expense (₹)</label>
+              <input type="number" name="otherExpense" min="0" placeholder="0" oninput="calcTotal()" />
+            </div>
+            <div class="form-group">
+              <label>💰 Total Expense (₹)</label>
+              <input type="text" name="totalExpense" id="totalExpense" readonly placeholder="Auto calculated" />
+            </div>
+            <div class="form-group full">
+              <label>Expense Notes</label>
+              <textarea name="expenseNotes" rows="3" placeholder="Parts purchased, travel route, other details..."></textarea>
+            </div>
+          </div>
+        </div>
 
+        <button type="submit" id="submitBtn">Submit Support Ticket</button>
         <div id="messageBox"></div>
-
       </form>
-
     </div>
-
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>
