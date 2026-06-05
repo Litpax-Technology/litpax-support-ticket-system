@@ -162,6 +162,10 @@
                 <label>💰 Total Expense (₹)</label>
                 <input type="text" id="totalExpenseDisplay" readonly placeholder="Auto calculated" />
               </div>
+              <div class="form-group full">
+                <label>📝 Expense Remarks</label>
+                <input type="text" id="expenseRemarks" placeholder="e.g. Toll charges included, food during site visit..." />
+              </div>
             </div>
           </div>
 
@@ -199,7 +203,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw_UiQf5EJTJuKeFN21Xg4YkLo6O5je2iuj--BXjoJQQfuLGrd1L1hrcKtv1ZoMdpA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwL58wSLfqUc8wqTLmVoP0iJhgN64U2YkVrB-J7P4eMikxR50MmlK6yv2NoRaFRyVc3/exec";
 
     async function loadTicketList() {
       try {
@@ -279,6 +283,7 @@
       document.getElementById("foodExpense").value      = t.foodExpense   || "";
       document.getElementById("partsExpense").value     = t.partsExpense  || "";
       document.getElementById("otherExpense").value     = t.otherExpense  || "";
+      document.getElementById("expenseRemarks").value   = t.expenseRemarks || "";
       document.getElementById("remarks").value          = t.remarks       || "";
       calcUpdateTotal();
 
@@ -316,6 +321,7 @@
         foodExpense:   parseFloat(document.getElementById("foodExpense").value)   || 0,
         partsExpense:  parseFloat(document.getElementById("partsExpense").value)  || 0,
         otherExpense:  parseFloat(document.getElementById("otherExpense").value)  || 0,
+        expenseRemarks: document.getElementById("expenseRemarks").value.trim(),
         partsChanged:  document.getElementById("partsChanged").value.trim(),
         remarks:       document.getElementById("remarks").value.trim(),
         finalSubmit:   isFinal ? "Yes" : "No"
