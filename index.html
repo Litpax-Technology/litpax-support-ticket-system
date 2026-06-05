@@ -7,105 +7,90 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     .ticket-info-bar {
-      background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+      background: linear-gradient(135deg,#eff6ff,#f0fdf4);
       border: 1.5px solid #bfdbfe;
       border-radius: 18px;
       padding: 18px 20px;
       margin-bottom: 24px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3,1fr);
       gap: 12px;
     }
     .ticket-info-bar .info-item label {
-      font-size: 11px;
-      color: #64748b;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      margin-bottom: 4px;
+      font-size: 11px; color: #64748b; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px;
     }
-    .ticket-info-bar .info-item span {
-      font-size: 14px;
-      color: #0f172a;
-      font-weight: 700;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-    .status-open     { background: #fef3c7; color: #92400e; }
-    .status-assigned { background: #dbeafe; color: #1e40af; }
-    .status-closed   { background: #dcfce7; color: #166534; }
+    .ticket-info-bar .info-item span { font-size: 14px; color: #0f172a; font-weight: 700; }
+    .status-badge { display:inline-block; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:800; }
+    .status-open     { background:#fef3c7; color:#92400e; }
+    .status-assigned { background:#dbeafe; color:#1e40af; }
+    .status-closed   { background:#dcfce7; color:#166534; }
+    .hidden { display:none !important; }
 
-    .search-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 28px;
+    /* Ticket selector area */
+    .selector-wrap { margin-bottom: 24px; }
+    .selector-label {
+      font-size: 12px; font-weight: 900; color: #64748b;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
     }
-    .search-bar input {
-      flex: 1;
-      text-transform: uppercase;
+    .ticket-select-row { display: flex; gap: 12px; align-items: center; }
+    .ticket-select-row select {
+      flex: 1; border-radius: 16px; padding: 14px 16px;
+      font-size: 14px; color: #0f172a; border: 1.5px solid #cbd5e1;
+      background: #fff; outline: none; font-family: inherit;
+      font-weight: 700; cursor: pointer; transition: .2s;
     }
-    .search-bar button {
-      width: auto;
-      margin-top: 0;
-      padding: 14px 28px;
-      border-radius: 16px;
-      font-size: 14px;
+    .ticket-select-row select:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
+    .btn-load {
+      width: auto; margin-top: 0; padding: 14px 26px;
+      border-radius: 16px; font-size: 14px; white-space: nowrap;
     }
-    .hidden { display: none !important; }
+    .divider-or {
+      display: flex; align-items: center; gap: 12px;
+      margin: 14px 0; color: #94a3b8; font-size: 12px; font-weight: 800;
+    }
+    .divider-or::before, .divider-or::after {
+      content: ''; flex: 1; height: 1px; background: #e2e8f0;
+    }
+    .manual-row { display: flex; gap: 10px; }
+    .manual-row input {
+      flex: 1; border-radius: 14px; padding: 12px 14px;
+      font-size: 14px; border: 1.5px solid #e2e8f0;
+      outline: none; text-transform: uppercase; font-family: inherit;
+      transition: .2s;
+    }
+    .manual-row input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
+    .btn-go {
+      width: auto; margin-top: 0; padding: 12px 22px;
+      border-radius: 14px; font-size: 14px;
+    }
+    .loading-dots { color: #64748b; font-size: 13px; font-weight: 700; padding: 14px 0; }
 
     .final-submit-box {
-      background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-      border: 1.5px solid #f9a8d4;
-      border-radius: 18px;
-      padding: 18px 20px;
-      margin-top: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      background: linear-gradient(135deg,#fdf2f8,#fce7f3);
+      border: 1.5px solid #f9a8d4; border-radius: 18px;
+      padding: 18px 20px; margin-top: 20px;
     }
     .final-submit-box label {
-      margin: 0;
-      font-size: 14px;
-      color: #831843;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
+      margin: 0; font-size: 14px; color: #831843;
+      cursor: pointer; display: flex; align-items: center;
+      gap: 10px; font-weight: 800;
     }
     .final-submit-box input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      accent-color: #db2777;
-      cursor: pointer;
-      border-radius: 6px;
+      width: 20px; height: 20px; accent-color: #db2777; cursor: pointer;
     }
-    .final-submit-box p {
-      font-size: 12px;
-      color: #9d174d;
-      margin-top: 4px;
-      font-weight: 500;
-    }
+    .final-submit-box p { font-size: 12px; color: #9d174d; margin-top: 6px; font-weight: 500; }
     .closed-overlay {
-      background: #fef2f2;
-      border: 1.5px solid #fecaca;
-      border-radius: 18px;
-      padding: 20px;
-      text-align: center;
-      color: #b91c1c;
-      font-weight: 800;
-      font-size: 15px;
-      margin-bottom: 20px;
+      background: #fef2f2; border: 1.5px solid #fecaca;
+      border-radius: 18px; padding: 20px; text-align: center;
+      color: #b91c1c; font-weight: 800; font-size: 15px; margin-bottom: 20px;
     }
     @media(max-width:720px) {
       .ticket-info-bar { grid-template-columns: 1fr 1fr; }
-      .search-bar { flex-direction: column; }
-      .search-bar button { width: 100%; }
+      .ticket-select-row { flex-direction: column; }
+      .btn-load { width: 100%; }
+      .manual-row { flex-direction: column; }
+      .btn-go { width: 100%; }
     }
   </style>
 </head>
@@ -116,30 +101,43 @@
       <div class="form-header">
         <div>
           <h1>Update Service Ticket</h1>
-          <p>Search your ticket by ID and update expenses, parts & remarks</p>
+          <p>Select your ticket and update expenses, parts & remarks</p>
         </div>
         <span>Litpax Support</span>
       </div>
 
-      <!-- Search Bar -->
-      <div class="search-bar">
-        <input type="text" id="searchId" placeholder="Enter Ticket ID  e.g. SUP-0001" />
-        <button onclick="fetchTicket()">🔍 Fetch Ticket</button>
+      <!-- Ticket Selector -->
+      <div class="selector-wrap">
+        <div class="selector-label">Select Ticket</div>
+        <div id="loadingDots" class="loading-dots">⏳ Loading open tickets...</div>
+
+        <div id="selectorUI" class="hidden">
+          <div class="ticket-select-row">
+            <select id="ticketDropdown">
+              <option value="">— Select a ticket —</option>
+            </select>
+            <button class="btn-load" onclick="fetchFromDropdown()">🔍 Load Ticket</button>
+          </div>
+
+          <div class="divider-or">OR enter ID manually</div>
+
+          <div class="manual-row">
+            <input type="text" id="searchId" placeholder="e.g. SUP-0001" />
+            <button class="btn-go" onclick="fetchTicket()">Go →</button>
+          </div>
+        </div>
       </div>
+
       <div id="searchMsg"></div>
 
-      <!-- Ticket Details (hidden until fetched) -->
+      <!-- Ticket Form (hidden until fetched) -->
       <div id="ticketSection" class="hidden">
-
-        <!-- Info Bar -->
         <div class="ticket-info-bar" id="infoBar"></div>
 
-        <!-- Closed Warning -->
         <div id="closedWarning" class="closed-overlay hidden">
           ✅ This ticket has been <b>Finally Submitted</b> and is now closed. No further updates allowed.
         </div>
 
-        <!-- Update Form -->
         <form id="updateForm">
           <input type="hidden" id="ticketIdHidden" />
 
@@ -163,7 +161,7 @@
           <div class="form-grid">
             <div class="form-group full">
               <label>Parts Changed (describe what was replaced/repaired)</label>
-              <textarea id="partsChanged" name="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed, connector soldered..."></textarea>
+              <textarea id="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed, connector soldered..."></textarea>
             </div>
           </div>
 
@@ -172,19 +170,19 @@
             <div class="form-grid">
               <div class="form-group">
                 <label>🚗 Travel Expense (₹)</label>
-                <input type="number" id="travelExpense" name="travelExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+                <input type="number" id="travelExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
               </div>
               <div class="form-group">
                 <label>🍽️ Food Expense (₹)</label>
-                <input type="number" id="foodExpense" name="foodExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+                <input type="number" id="foodExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
               </div>
               <div class="form-group">
                 <label>🔧 Parts / Material Expense (₹)</label>
-                <input type="number" id="partsExpense" name="partsExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+                <input type="number" id="partsExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
               </div>
               <div class="form-group">
                 <label>📦 Other Expense (₹)</label>
-                <input type="number" id="otherExpense" name="otherExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+                <input type="number" id="otherExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
               </div>
               <div class="form-group full">
                 <label>💰 Total Expense (₹)</label>
@@ -197,11 +195,10 @@
           <div class="form-grid">
             <div class="form-group full">
               <label>Technician Remarks</label>
-              <textarea id="remarks" name="remarks" rows="3" placeholder="Any notes or observations..."></textarea>
+              <textarea id="remarks" rows="3" placeholder="Any notes or observations..."></textarea>
             </div>
           </div>
 
-          <!-- Final Submit Toggle -->
           <div class="final-submit-box">
             <div>
               <label>
@@ -213,14 +210,16 @@
           </div>
 
           <button type="button" onclick="saveTicket(false)" id="saveBtn">💾 Save Progress</button>
-          <button type="button" onclick="saveTicket(true)" id="finalBtn" style="background:linear-gradient(135deg,#7f1d1d,#b91c1c,#dc2626);margin-top:10px;">✅ Final Submit & Close Ticket</button>
+          <button type="button" onclick="saveTicket(true)" id="finalBtn"
+            style="background:linear-gradient(135deg,#7f1d1d,#b91c1c,#dc2626);margin-top:10px;">
+            ✅ Final Submit & Close Ticket
+          </button>
           <div id="updateMsg"></div>
         </form>
-
       </div>
+
     </div>
 
-    <!-- Back Link -->
     <div style="text-align:center;margin-top:18px;">
       <a href="index.html" style="color:#2563eb;font-weight:700;font-size:14px;text-decoration:none;">← Raise New Ticket</a>
     </div>
@@ -229,34 +228,87 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbw_UiQf5EJTJuKeFN21Xg4YkLo6O5je2iuj--BXjoJQQfuLGrd1L1hrcKtv1ZoMdpA/exec";
 
+    // Load all open tickets into dropdown on page load
+    async function loadTicketList() {
+      try {
+        const res  = await fetch(`${API_URL}?action=getTickets`);
+        const data = await res.json();
+        const sel  = document.getElementById("ticketDropdown");
+
+        if (data.success && data.tickets.length > 0) {
+          // Show only non-closed tickets first, then closed
+          const open   = data.tickets.filter(t => t.status !== "Closed");
+          const closed = data.tickets.filter(t => t.status === "Closed");
+
+          if (open.length > 0) {
+            const og = document.createElement("optgroup");
+            og.label = "Open / Active";
+            open.forEach(t => {
+              const o = document.createElement("option");
+              o.value = t.ticketId;
+              o.textContent = `${t.ticketId} — ${t.technicianName} | ${t.customerName} | ${t.status}`;
+              og.appendChild(o);
+            });
+            sel.appendChild(og);
+          }
+
+          if (closed.length > 0) {
+            const og2 = document.createElement("optgroup");
+            og2.label = "Closed";
+            closed.forEach(t => {
+              const o = document.createElement("option");
+              o.value = t.ticketId;
+              o.textContent = `${t.ticketId} — ${t.technicianName} | ${t.customerName} | Closed`;
+              og2.appendChild(o);
+            });
+            sel.appendChild(og2);
+          }
+        } else {
+          const o = document.createElement("option");
+          o.textContent = "No tickets found";
+          o.disabled = true;
+          sel.appendChild(o);
+        }
+      } catch (err) {
+        console.error("Could not load tickets:", err);
+      }
+      document.getElementById("loadingDots").classList.add("hidden");
+      document.getElementById("selectorUI").classList.remove("hidden");
+    }
+
+    function fetchFromDropdown() {
+      const sel = document.getElementById("ticketDropdown");
+      const id  = sel.value;
+      if (!id) { showMsg(document.getElementById("searchMsg"), "error", "Please select a ticket"); return; }
+      doFetch(id);
+    }
+
     async function fetchTicket() {
       const id = document.getElementById("searchId").value.trim().toUpperCase();
-      const msg = document.getElementById("searchMsg");
-      if (!id) { showMsg(msg, "error", "Please enter a Ticket ID"); return; }
+      if (!id) { showMsg(document.getElementById("searchMsg"), "error", "Please enter a Ticket ID"); return; }
+      doFetch(id);
+    }
 
-      msg.className = "";
-      msg.style.display = "none";
-      const btn = document.querySelector(".search-bar button");
-      btn.disabled = true;
-      btn.innerText = "Fetching...";
+    async function doFetch(id) {
+      const msg = document.getElementById("searchMsg");
+      msg.className = ""; msg.style.display = "none";
 
       try {
         const res  = await fetch(`${API_URL}?action=getTicketById&ticketId=${id}`);
         const data = await res.json();
         if (!data.success) throw new Error(data.message);
         populateForm(data.ticket);
+        // scroll to form
+        document.getElementById("ticketSection").scrollIntoView({ behavior: "smooth", block: "start" });
       } catch (err) {
         showMsg(msg, "error", "Error: " + err.message);
       }
-      btn.disabled = false;
-      btn.innerText = "🔍 Fetch Ticket";
     }
 
     function populateForm(t) {
       document.getElementById("ticketSection").classList.remove("hidden");
       document.getElementById("ticketIdHidden").value = t.ticketId;
 
-      // Info bar
       const statusClass = t.status === "Closed" ? "status-closed" : t.status === "Assigned" ? "status-assigned" : "status-open";
       document.getElementById("infoBar").innerHTML = `
         <div class="info-item"><label>Ticket ID</label><span>${t.ticketId}</span></div>
@@ -267,26 +319,23 @@
         <div class="info-item"><label>Location</label><span>${t.location}</span></div>
       `;
 
-      // Read-only fields
       document.getElementById("roProblemType").value    = t.problemType;
       document.getElementById("roBatteryModel").value   = t.batteryModel;
       document.getElementById("roProblemDetails").value = t.problemDetails;
-
-      // Editable fields
-      document.getElementById("partsChanged").value  = t.partsChanged  || "";
-      document.getElementById("travelExpense").value  = t.travelExpense || "";
-      document.getElementById("foodExpense").value    = t.foodExpense   || "";
-      document.getElementById("partsExpense").value   = t.partsExpense  || "";
-      document.getElementById("otherExpense").value   = t.otherExpense  || "";
-      document.getElementById("remarks").value        = t.remarks       || "";
+      document.getElementById("partsChanged").value     = t.partsChanged  || "";
+      document.getElementById("travelExpense").value    = t.travelExpense || "";
+      document.getElementById("foodExpense").value      = t.foodExpense   || "";
+      document.getElementById("partsExpense").value     = t.partsExpense  || "";
+      document.getElementById("otherExpense").value     = t.otherExpense  || "";
+      document.getElementById("remarks").value          = t.remarks       || "";
       calcUpdateTotal();
 
-      // If already closed, disable everything
       if (t.finalSubmit === "Yes") {
         document.getElementById("closedWarning").classList.remove("hidden");
-        document.getElementById("updateForm").querySelectorAll("input:not([readonly]), textarea, button").forEach(el => el.disabled = true);
+        document.getElementById("updateForm").querySelectorAll("input:not([readonly]),textarea,button").forEach(el => el.disabled = true);
       } else {
         document.getElementById("closedWarning").classList.add("hidden");
+        document.getElementById("updateForm").querySelectorAll("input,textarea,button").forEach(el => el.disabled = false);
       }
     }
 
@@ -302,31 +351,21 @@
     async function saveTicket(isFinal) {
       const ticketId = document.getElementById("ticketIdHidden").value;
       if (!ticketId) return;
-
-      const confirmed = isFinal
-        ? confirm("Are you sure you want to FINALLY SUBMIT this ticket? This action cannot be undone.")
-        : true;
-      if (!confirmed) return;
+      if (isFinal && !confirm("Are you sure you want to FINALLY SUBMIT? This cannot be undone.")) return;
 
       const saveBtn  = document.getElementById("saveBtn");
       const finalBtn = document.getElementById("finalBtn");
       const msg      = document.getElementById("updateMsg");
-      saveBtn.disabled  = true;
-      finalBtn.disabled = true;
+      saveBtn.disabled = finalBtn.disabled = true;
       saveBtn.innerText = "Saving...";
-
-      const travel = parseFloat(document.getElementById("travelExpense").value) || 0;
-      const food   = parseFloat(document.getElementById("foodExpense").value)   || 0;
-      const parts  = parseFloat(document.getElementById("partsExpense").value)  || 0;
-      const other  = parseFloat(document.getElementById("otherExpense").value)  || 0;
 
       const payload = {
         action:        "updateTicket",
-        ticketId:      ticketId,
-        travelExpense: travel,
-        foodExpense:   food,
-        partsExpense:  parts,
-        otherExpense:  other,
+        ticketId,
+        travelExpense: parseFloat(document.getElementById("travelExpense").value) || 0,
+        foodExpense:   parseFloat(document.getElementById("foodExpense").value)   || 0,
+        partsExpense:  parseFloat(document.getElementById("partsExpense").value)  || 0,
+        otherExpense:  parseFloat(document.getElementById("otherExpense").value)  || 0,
         partsChanged:  document.getElementById("partsChanged").value.trim(),
         remarks:       document.getElementById("remarks").value.trim(),
         finalSubmit:   isFinal ? "Yes" : "No"
@@ -338,35 +377,34 @@
         if (!result.success) throw new Error(result.message);
         showMsg(msg, "success", result.message + (result.total ? ` | Total: ₹${result.total}` : ""));
         if (isFinal) {
-          document.getElementById("updateForm").querySelectorAll("input:not([readonly]), textarea, button").forEach(el => el.disabled = true);
+          document.getElementById("updateForm").querySelectorAll("input:not([readonly]),textarea,button").forEach(el => el.disabled = true);
           document.getElementById("closedWarning").classList.remove("hidden");
         }
       } catch (err) {
         showMsg(msg, "error", "Error: " + err.message);
       }
 
-      saveBtn.disabled  = false;
-      finalBtn.disabled = false;
+      saveBtn.disabled = finalBtn.disabled = false;
       saveBtn.innerText = "💾 Save Progress";
     }
 
     function showMsg(el, type, text) {
-      el.className = type;
-      el.innerText = text;
-      el.style.display = "block";
+      el.className = type; el.innerText = text; el.style.display = "block";
     }
 
-    // Allow pressing Enter in search box
-    document.getElementById("searchId").addEventListener("keydown", function(e) {
+    document.getElementById("searchId").addEventListener("keydown", e => {
       if (e.key === "Enter") fetchTicket();
     });
 
-    // Auto-fill & fetch if ?id= present in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlId = urlParams.get("id");
+    // Init
+    loadTicketList();
+
+    // Auto-fetch from URL param
+    const urlId = new URLSearchParams(window.location.search).get("id");
     if (urlId) {
       document.getElementById("searchId").value = urlId.toUpperCase();
-      fetchTicket();
+      // Wait for DOM then fetch
+      setTimeout(() => doFetch(urlId.toUpperCase()), 100);
     }
   </script>
 </body>
