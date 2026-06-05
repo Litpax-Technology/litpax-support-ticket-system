@@ -25,9 +25,10 @@ textarea{resize:vertical;}
 button{width:100%;margin-top:24px;border:none;border-radius:18px;padding:16px;font-size:15px;font-weight:900;color:#ffffff;background:linear-gradient(135deg,#0f172a,#1e3a8a,#15803d);cursor:pointer;box-shadow:0 14px 28px rgba(30,58,138,.24);transition:.25s ease;}
 button:hover{transform:translateY(-2px);box-shadow:0 20px 38px rgba(30,58,138,.32);}
 button:disabled{opacity:.65;cursor:not-allowed;transform:none;}
-#messageBox{margin-top:16px;padding:14px;border-radius:14px;font-size:14px;font-weight:700;display:none;}
-#messageBox.success{display:block;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
-#messageBox.error{display:block;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+#messageBox{margin-top:16px;padding:14px;border-radius:14px;font-size:14px;font-weight:700;}
+#messageBox.success{display:block !important;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+#messageBox.error{display:block !important;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+#messageBox:not(.success):not(.error){display:none;}
 @media(max-width:720px){
   body{padding:12px;}
   .form-card{padding:18px;border-radius:22px;}
