@@ -3,409 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Update Ticket — Litpax Support</title>
+  <title>New Service Request — Litpax Support</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .ticket-info-bar {
-      background: linear-gradient(135deg,#eff6ff,#f0fdf4);
-      border: 1.5px solid #bfdbfe;
-      border-radius: 18px;
-      padding: 18px 20px;
-      margin-bottom: 24px;
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 12px;
-    }
-    .ticket-info-bar .info-item label {
-      font-size: 11px; color: #64748b; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px;
-    }
-    .ticket-info-bar .info-item span { font-size: 14px; color: #0f172a; font-weight: 700; }
-    .status-badge { display:inline-block; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:800; }
-    .status-open     { background:#fef3c7; color:#92400e; }
-    .status-assigned { background:#dbeafe; color:#1e40af; }
-    .status-closed   { background:#dcfce7; color:#166534; }
-    .hidden { display:none !important; }
-
-    /* Ticket selector area */
-    .selector-wrap { margin-bottom: 24px; }
-    .selector-label {
-      font-size: 12px; font-weight: 900; color: #64748b;
-      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
-    }
-    .ticket-select-row { display: flex; gap: 12px; align-items: center; }
-    .ticket-select-row select {
-      flex: 1; border-radius: 16px; padding: 14px 16px;
-      font-size: 14px; color: #0f172a; border: 1.5px solid #cbd5e1;
-      background: #fff; outline: none; font-family: inherit;
-      font-weight: 700; cursor: pointer; transition: .2s;
-    }
-    .ticket-select-row select:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
-    .btn-load {
-      width: auto; margin-top: 0; padding: 14px 26px;
-      border-radius: 16px; font-size: 14px; white-space: nowrap;
-    }
-    .divider-or {
-      display: flex; align-items: center; gap: 12px;
-      margin: 14px 0; color: #94a3b8; font-size: 12px; font-weight: 800;
-    }
-    .divider-or::before, .divider-or::after {
-      content: ''; flex: 1; height: 1px; background: #e2e8f0;
-    }
-    .manual-row { display: flex; gap: 10px; }
-    .manual-row input {
-      flex: 1; border-radius: 14px; padding: 12px 14px;
-      font-size: 14px; border: 1.5px solid #e2e8f0;
-      outline: none; text-transform: uppercase; font-family: inherit;
-      transition: .2s;
-    }
-    .manual-row input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
-    .btn-go {
-      width: auto; margin-top: 0; padding: 12px 22px;
-      border-radius: 14px; font-size: 14px;
-    }
-    .loading-dots { color: #64748b; font-size: 13px; font-weight: 700; padding: 14px 0; }
-
-    .final-submit-box {
-      background: linear-gradient(135deg,#fdf2f8,#fce7f3);
-      border: 1.5px solid #f9a8d4; border-radius: 18px;
-      padding: 18px 20px; margin-top: 20px;
-    }
-    .final-submit-box label {
-      margin: 0; font-size: 14px; color: #831843;
-      cursor: pointer; display: flex; align-items: center;
-      gap: 10px; font-weight: 800;
-    }
-    .final-submit-box input[type="checkbox"] {
-      width: 20px; height: 20px; accent-color: #db2777; cursor: pointer;
-    }
-    .final-submit-box p { font-size: 12px; color: #9d174d; margin-top: 6px; font-weight: 500; }
-    .closed-overlay {
-      background: #fef2f2; border: 1.5px solid #fecaca;
-      border-radius: 18px; padding: 20px; text-align: center;
-      color: #b91c1c; font-weight: 800; font-size: 15px; margin-bottom: 20px;
-    }
-    @media(max-width:720px) {
-      .ticket-info-bar { grid-template-columns: 1fr 1fr; }
-      .ticket-select-row { flex-direction: column; }
-      .btn-load { width: 100%; }
-      .manual-row { flex-direction: column; }
-      .btn-go { width: 100%; }
-    }
-  </style>
 </head>
 <body>
   <div class="app-wrapper">
     <div class="form-card">
-
       <div class="form-header">
         <div>
-          <h1>Update Service Ticket</h1>
-          <p>Select your ticket and update expenses, parts & remarks</p>
+          <h1>Service Support Request</h1>
+          <p>Raise technician support ticket for field battery repairing assistance</p>
         </div>
         <span>Litpax Support</span>
       </div>
+      <form id="supportForm">
 
-      <!-- Ticket Selector -->
-      <div class="selector-wrap">
-        <div class="selector-label">Select Ticket</div>
-        <div id="loadingDots" class="loading-dots">⏳ Loading open tickets...</div>
+        <div class="section-title">Technician Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Technician Name</label>
+            <input type="text" name="technicianName" required />
+          </div>
+          <div class="form-group">
+            <label>Technician Mobile</label>
+            <input type="tel" name="technicianMobile" required />
+          </div>
+        </div>
 
-        <div id="selectorUI" class="hidden">
-          <div class="ticket-select-row">
-            <select id="ticketDropdown">
-              <option value="">— Select a ticket —</option>
+        <div class="section-title">Customer Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" name="customerName" required />
+          </div>
+          <div class="form-group">
+            <label>Customer Mobile</label>
+            <input type="tel" name="customerMobile" required />
+          </div>
+          <div class="form-group full">
+            <label>Customer Location</label>
+            <input type="text" name="location" required />
+          </div>
+        </div>
+
+        <div class="section-title">Battery Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Battery Model</label>
+            <input type="text" name="batteryModel" required />
+          </div>
+          <div class="form-group">
+            <label>Battery Serial Number</label>
+            <input type="text" name="serialNumber" required />
+          </div>
+        </div>
+
+        <div class="section-title">Problem Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Problem Type</label>
+            <select name="problemType" required>
+              <option value="">Select Problem Type</option>
+              <option value="Battery Not Charging">Battery Not Charging</option>
+              <option value="Low Backup">Low Backup</option>
+              <option value="BMS Issue">BMS Issue</option>
+              <option value="Cell Issue">Cell Issue</option>
+              <option value="Connector Issue">Connector Issue</option>
+              <option value="Charger Issue">Charger Issue</option>
+              <option value="Wiring Issue">Wiring Issue</option>
+              <option value="Other">Other</option>
             </select>
-            <button class="btn-load" onclick="fetchFromDropdown()">🔍 Load Ticket</button>
           </div>
-
-          <div class="divider-or">OR enter ID manually</div>
-
-          <div class="manual-row">
-            <input type="text" id="searchId" placeholder="e.g. SUP-0001" />
-            <button class="btn-go" onclick="fetchTicket()">Go →</button>
+          <div class="form-group">
+            <label>Priority</label>
+            <select name="priority" required>
+              <option value="">Select Priority</option>
+              <option value="Normal">Normal</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Emergency">Emergency</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Problem Details</label>
+            <textarea name="problemDetails" rows="4" required></textarea>
           </div>
         </div>
-      </div>
 
-      <div id="searchMsg"></div>
-
-      <!-- Ticket Form (hidden until fetched) -->
-      <div id="ticketSection" class="hidden">
-        <div class="ticket-info-bar" id="infoBar"></div>
-
-        <div id="closedWarning" class="closed-overlay hidden">
-          ✅ This ticket has been <b>Finally Submitted</b> and is now closed. No further updates allowed.
-        </div>
-
-        <form id="updateForm">
-          <input type="hidden" id="ticketIdHidden" />
-
-          <div class="section-title">Problem Summary (Read Only)</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Problem Type</label>
-              <input type="text" id="roProblemType" readonly />
-            </div>
-            <div class="form-group">
-              <label>Battery Model</label>
-              <input type="text" id="roBatteryModel" readonly />
-            </div>
-            <div class="form-group full">
-              <label>Problem Details</label>
-              <textarea id="roProblemDetails" rows="3" readonly></textarea>
-            </div>
-          </div>
-
-          <div class="section-title">Parts Changed</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label>Parts Changed (describe what was replaced/repaired)</label>
-              <textarea id="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed, connector soldered..."></textarea>
-            </div>
-          </div>
-
-          <div class="section-title expense-title">Expense Details</div>
-          <div class="expense-box">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>🚗 Travel Expense (₹)</label>
-                <input type="number" id="travelExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group">
-                <label>🍽️ Food Expense (₹)</label>
-                <input type="number" id="foodExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group">
-                <label>🔧 Parts / Material Expense (₹)</label>
-                <input type="number" id="partsExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group">
-                <label>📦 Other Expense (₹)</label>
-                <input type="number" id="otherExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group full">
-                <label>💰 Total Expense (₹)</label>
-                <input type="text" id="totalExpenseDisplay" readonly placeholder="Auto calculated" />
-              </div>
-            </div>
-          </div>
-
-          <div class="section-title">Remarks</div>
-          <div class="form-grid">
-            <div class="form-group full">
-              <label>Technician Remarks</label>
-              <textarea id="remarks" rows="3" placeholder="Any notes or observations..."></textarea>
-            </div>
-          </div>
-
-          <div class="final-submit-box">
-            <div>
-              <label>
-                <input type="checkbox" id="finalSubmitCheck" />
-                Mark as Final Submit (Close Ticket)
-              </label>
-              <p>⚠️ Once finally submitted, ticket cannot be edited further.</p>
-            </div>
-          </div>
-
-          <button type="button" onclick="saveTicket(false)" id="saveBtn">💾 Save Progress</button>
-          <button type="button" onclick="saveTicket(true)" id="finalBtn"
-            style="background:linear-gradient(135deg,#7f1d1d,#b91c1c,#dc2626);margin-top:10px;">
-            ✅ Final Submit & Close Ticket
-          </button>
-          <div id="updateMsg"></div>
-        </form>
-      </div>
-
+        <button type="submit" id="submitBtn">Submit Support Ticket</button>
+        <div id="messageBox"></div>
+      </form>
     </div>
 
     <div style="text-align:center;margin-top:18px;">
-      <a href="index.html" style="color:#2563eb;font-weight:700;font-size:14px;text-decoration:none;">← Raise New Ticket</a>
+      <a href="index.html" style="color:#2563eb;font-weight:700;font-size:14px;text-decoration:none;">← Back to Update Ticket</a>
     </div>
   </div>
-
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw_UiQf5EJTJuKeFN21Xg4YkLo6O5je2iuj--BXjoJQQfuLGrd1L1hrcKtv1ZoMdpA/exec";
-
-    // Load all open tickets into dropdown on page load
-    async function loadTicketList() {
-      try {
-        const res  = await fetch(`${API_URL}?action=getTickets`);
-        const data = await res.json();
-        const sel  = document.getElementById("ticketDropdown");
-
-        if (data.success && data.tickets.length > 0) {
-          // Show only non-closed tickets first, then closed
-          const open   = data.tickets.filter(t => t.status !== "Closed");
-          const closed = data.tickets.filter(t => t.status === "Closed");
-
-          if (open.length > 0) {
-            const og = document.createElement("optgroup");
-            og.label = "Open / Active";
-            open.forEach(t => {
-              const o = document.createElement("option");
-              o.value = t.ticketId;
-              o.textContent = `${t.ticketId} — ${t.technicianName} | ${t.customerName} | ${t.status}`;
-              og.appendChild(o);
-            });
-            sel.appendChild(og);
-          }
-
-          if (closed.length > 0) {
-            const og2 = document.createElement("optgroup");
-            og2.label = "Closed";
-            closed.forEach(t => {
-              const o = document.createElement("option");
-              o.value = t.ticketId;
-              o.textContent = `${t.ticketId} — ${t.technicianName} | ${t.customerName} | Closed`;
-              og2.appendChild(o);
-            });
-            sel.appendChild(og2);
-          }
-        } else {
-          const o = document.createElement("option");
-          o.textContent = "No tickets found";
-          o.disabled = true;
-          sel.appendChild(o);
-        }
-      } catch (err) {
-        console.error("Could not load tickets:", err);
-      }
-      document.getElementById("loadingDots").classList.add("hidden");
-      document.getElementById("selectorUI").classList.remove("hidden");
-    }
-
-    function fetchFromDropdown() {
-      const sel = document.getElementById("ticketDropdown");
-      const id  = sel.value;
-      if (!id) { showMsg(document.getElementById("searchMsg"), "error", "Please select a ticket"); return; }
-      doFetch(id);
-    }
-
-    async function fetchTicket() {
-      const id = document.getElementById("searchId").value.trim().toUpperCase();
-      if (!id) { showMsg(document.getElementById("searchMsg"), "error", "Please enter a Ticket ID"); return; }
-      doFetch(id);
-    }
-
-    async function doFetch(id) {
-      const msg = document.getElementById("searchMsg");
-      msg.className = ""; msg.style.display = "none";
-
-      try {
-        const res  = await fetch(`${API_URL}?action=getTicketById&ticketId=${id}`);
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message);
-        populateForm(data.ticket);
-        // scroll to form
-        document.getElementById("ticketSection").scrollIntoView({ behavior: "smooth", block: "start" });
-      } catch (err) {
-        showMsg(msg, "error", "Error: " + err.message);
-      }
-    }
-
-    function populateForm(t) {
-      document.getElementById("ticketSection").classList.remove("hidden");
-      document.getElementById("ticketIdHidden").value = t.ticketId;
-
-      const statusClass = t.status === "Closed" ? "status-closed" : t.status === "Assigned" ? "status-assigned" : "status-open";
-      document.getElementById("infoBar").innerHTML = `
-        <div class="info-item"><label>Ticket ID</label><span>${t.ticketId}</span></div>
-        <div class="info-item"><label>Raised At</label><span>${t.requestTime}</span></div>
-        <div class="info-item"><label>Status</label><span class="status-badge ${statusClass}">${t.status}</span></div>
-        <div class="info-item"><label>Technician</label><span>${t.technicianName}</span></div>
-        <div class="info-item"><label>Customer</label><span>${t.customerName}</span></div>
-        <div class="info-item"><label>Location</label><span>${t.location}</span></div>
-      `;
-
-      document.getElementById("roProblemType").value    = t.problemType;
-      document.getElementById("roBatteryModel").value   = t.batteryModel;
-      document.getElementById("roProblemDetails").value = t.problemDetails;
-      document.getElementById("partsChanged").value     = t.partsChanged  || "";
-      document.getElementById("travelExpense").value    = t.travelExpense || "";
-      document.getElementById("foodExpense").value      = t.foodExpense   || "";
-      document.getElementById("partsExpense").value     = t.partsExpense  || "";
-      document.getElementById("otherExpense").value     = t.otherExpense  || "";
-      document.getElementById("remarks").value          = t.remarks       || "";
-      calcUpdateTotal();
-
-      if (t.finalSubmit === "Yes") {
-        document.getElementById("closedWarning").classList.remove("hidden");
-        document.getElementById("updateForm").querySelectorAll("input:not([readonly]),textarea,button").forEach(el => el.disabled = true);
-      } else {
-        document.getElementById("closedWarning").classList.add("hidden");
-        document.getElementById("updateForm").querySelectorAll("input,textarea,button").forEach(el => el.disabled = false);
-      }
-    }
-
-    function calcUpdateTotal() {
-      const travel = parseFloat(document.getElementById("travelExpense").value) || 0;
-      const food   = parseFloat(document.getElementById("foodExpense").value)   || 0;
-      const parts  = parseFloat(document.getElementById("partsExpense").value)  || 0;
-      const other  = parseFloat(document.getElementById("otherExpense").value)  || 0;
-      const total  = travel + food + parts + other;
-      document.getElementById("totalExpenseDisplay").value = total > 0 ? "₹" + total.toFixed(2) : "";
-    }
-
-    async function saveTicket(isFinal) {
-      const ticketId = document.getElementById("ticketIdHidden").value;
-      if (!ticketId) return;
-      if (isFinal && !confirm("Are you sure you want to FINALLY SUBMIT? This cannot be undone.")) return;
-
-      const saveBtn  = document.getElementById("saveBtn");
-      const finalBtn = document.getElementById("finalBtn");
-      const msg      = document.getElementById("updateMsg");
-      saveBtn.disabled = finalBtn.disabled = true;
-      saveBtn.innerText = "Saving...";
-
-      const payload = {
-        action:        "updateTicket",
-        ticketId,
-        travelExpense: parseFloat(document.getElementById("travelExpense").value) || 0,
-        foodExpense:   parseFloat(document.getElementById("foodExpense").value)   || 0,
-        partsExpense:  parseFloat(document.getElementById("partsExpense").value)  || 0,
-        otherExpense:  parseFloat(document.getElementById("otherExpense").value)  || 0,
-        partsChanged:  document.getElementById("partsChanged").value.trim(),
-        remarks:       document.getElementById("remarks").value.trim(),
-        finalSubmit:   isFinal ? "Yes" : "No"
-      };
-
-      try {
-        const res    = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-        const result = await res.json();
-        if (!result.success) throw new Error(result.message);
-        showMsg(msg, "success", result.message + (result.total ? ` | Total: ₹${result.total}` : ""));
-        if (isFinal) {
-          document.getElementById("updateForm").querySelectorAll("input:not([readonly]),textarea,button").forEach(el => el.disabled = true);
-          document.getElementById("closedWarning").classList.remove("hidden");
-        }
-      } catch (err) {
-        showMsg(msg, "error", "Error: " + err.message);
-      }
-
-      saveBtn.disabled = finalBtn.disabled = false;
-      saveBtn.innerText = "💾 Save Progress";
-    }
-
-    function showMsg(el, type, text) {
-      el.className = type; el.innerText = text; el.style.display = "block";
-    }
-
-    document.getElementById("searchId").addEventListener("keydown", e => {
-      if (e.key === "Enter") fetchTicket();
-    });
-
-    // Init
-    loadTicketList();
-
-    // Auto-fetch from URL param
-    const urlId = new URLSearchParams(window.location.search).get("id");
-    if (urlId) {
-      document.getElementById("searchId").value = urlId.toUpperCase();
-      // Wait for DOM then fetch
-      setTimeout(() => doFetch(urlId.toUpperCase()), 100);
-    }
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
