@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbw_UiQf5EJTJuKeFN21Xg4YkLo6O5je2iuj--BXjoJQQfuLGrd1L1hrcKtv1ZoMdpA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwL58wSLfqUc8wqTLmVoP0iJhgN64U2YkVrB-J7P4eMikxR50MmlK6yv2NoRaFRyVc3/exec";
 
 const form       = document.getElementById("supportForm");
 const submitBtn  = document.getElementById("submitBtn");
