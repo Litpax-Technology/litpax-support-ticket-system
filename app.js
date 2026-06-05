@@ -34,11 +34,17 @@ form.addEventListener("submit", async function(e) {
     if (result.success) {
       messageBox.className = "success";
       messageBox.innerHTML = `
-        ✅ Ticket Created: <b>${result.ticketId}</b><br/>
-        <a href="index.html?id=${result.ticketId}"
-           style="color:#15803d;font-weight:800;text-decoration:underline;font-size:13px;display:inline-block;margin-top:6px;">
-          → Update this ticket now
-        </a>
+        ✅ Ticket Created Successfully: <b>${result.ticketId}</b>
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+          <a href="index.html?id=${result.ticketId}"
+             style="flex:1;min-width:140px;text-align:center;padding:12px 16px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;font-weight:800;font-size:13px;border-radius:12px;text-decoration:none;">
+            ✏️ Update This Ticket
+          </a>
+          <a href="update.html"
+             style="flex:1;min-width:140px;text-align:center;padding:12px 16px;background:linear-gradient(135deg,#14532d,#15803d);color:#fff;font-weight:800;font-size:13px;border-radius:12px;text-decoration:none;">
+            ➕ Create New Ticket
+          </a>
+        </div>
       `;
       form.reset();
     } else {
