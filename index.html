@@ -3,120 +3,371 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Litpax Service Support Form</title>
+  <title>Update Ticket — Litpax Support</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .ticket-info-bar {
+      background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+      border: 1.5px solid #bfdbfe;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .ticket-info-bar .info-item label {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 4px;
+    }
+    .ticket-info-bar .info-item span {
+      font-size: 14px;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .status-open     { background: #fef3c7; color: #92400e; }
+    .status-assigned { background: #dbeafe; color: #1e40af; }
+    .status-closed   { background: #dcfce7; color: #166534; }
+
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .search-bar input {
+      flex: 1;
+      text-transform: uppercase;
+    }
+    .search-bar button {
+      width: auto;
+      margin-top: 0;
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-size: 14px;
+    }
+    .hidden { display: none !important; }
+
+    .final-submit-box {
+      background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+      border: 1.5px solid #f9a8d4;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .final-submit-box label {
+      margin: 0;
+      font-size: 14px;
+      color: #831843;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+    .final-submit-box input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #db2777;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .final-submit-box p {
+      font-size: 12px;
+      color: #9d174d;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+    .closed-overlay {
+      background: #fef2f2;
+      border: 1.5px solid #fecaca;
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      color: #b91c1c;
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    @media(max-width:720px) {
+      .ticket-info-bar { grid-template-columns: 1fr 1fr; }
+      .search-bar { flex-direction: column; }
+      .search-bar button { width: 100%; }
+    }
+  </style>
 </head>
 <body>
   <div class="app-wrapper">
     <div class="form-card">
+
       <div class="form-header">
         <div>
-          <h1>Service Support Request</h1>
-          <p>Raise technician support ticket for field battery repairing assistance</p>
+          <h1>Update Service Ticket</h1>
+          <p>Search your ticket by ID and update expenses, parts & remarks</p>
         </div>
         <span>Litpax Support</span>
       </div>
-      <form id="supportForm">
 
-        <div class="section-title">Technician Details</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Technician Name</label>
-            <input type="text" name="technicianName" required />
-          </div>
-          <div class="form-group">
-            <label>Technician Mobile</label>
-            <input type="tel" name="technicianMobile" required />
-          </div>
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <input type="text" id="searchId" placeholder="Enter Ticket ID  e.g. SUP-0001" />
+        <button onclick="fetchTicket()">🔍 Fetch Ticket</button>
+      </div>
+      <div id="searchMsg"></div>
+
+      <!-- Ticket Details (hidden until fetched) -->
+      <div id="ticketSection" class="hidden">
+
+        <!-- Info Bar -->
+        <div class="ticket-info-bar" id="infoBar"></div>
+
+        <!-- Closed Warning -->
+        <div id="closedWarning" class="closed-overlay hidden">
+          ✅ This ticket has been <b>Finally Submitted</b> and is now closed. No further updates allowed.
         </div>
 
-        <div class="section-title">Customer Details</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Customer Name</label>
-            <input type="text" name="customerName" required />
-          </div>
-          <div class="form-group">
-            <label>Customer Mobile</label>
-            <input type="tel" name="customerMobile" required />
-          </div>
-          <div class="form-group full">
-            <label>Customer Location</label>
-            <input type="text" name="location" required />
-          </div>
-        </div>
+        <!-- Update Form -->
+        <form id="updateForm">
+          <input type="hidden" id="ticketIdHidden" />
 
-        <div class="section-title">Battery Details</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Battery Model</label>
-            <input type="text" name="batteryModel" required />
-          </div>
-          <div class="form-group">
-            <label>Battery Serial Number</label>
-            <input type="text" name="serialNumber" required />
-          </div>
-        </div>
-
-        <div class="section-title">Problem Details</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Problem Type</label>
-            <select name="problemType" required>
-              <option value="">Select Problem Type</option>
-              <option value="Battery Not Charging">Battery Not Charging</option>
-              <option value="Low Backup">Low Backup</option>
-              <option value="BMS Issue">BMS Issue</option>
-              <option value="Cell Issue">Cell Issue</option>
-              <option value="Connector Issue">Connector Issue</option>
-              <option value="Charger Issue">Charger Issue</option>
-              <option value="Wiring Issue">Wiring Issue</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Priority</label>
-            <select name="priority" required>
-              <option value="">Select Priority</option>
-              <option value="Normal">Normal</option>
-              <option value="Urgent">Urgent</option>
-              <option value="Emergency">Emergency</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <label>Problem Details</label>
-            <textarea name="problemDetails" rows="4" required></textarea>
-          </div>
-        </div>
-
-        <div class="section-title expense-title">Expense Details</div>
-        <div class="expense-box">
+          <div class="section-title">Problem Summary (Read Only)</div>
           <div class="form-grid">
             <div class="form-group">
-              <label>🚗 Travel Expense (₹)</label>
-              <input type="number" name="travelExpense" min="0" placeholder="0" oninput="calcTotal()" />
+              <label>Problem Type</label>
+              <input type="text" id="roProblemType" readonly />
             </div>
             <div class="form-group">
-              <label>🔧 Parts / Material Expense (₹)</label>
-              <input type="number" name="partsExpense" min="0" placeholder="0" oninput="calcTotal()" />
+              <label>Battery Model</label>
+              <input type="text" id="roBatteryModel" readonly />
             </div>
-            <div class="form-group">
-              <label>📦 Other Expense (₹)</label>
-              <input type="number" name="otherExpense" min="0" placeholder="0" oninput="calcTotal()" />
+            <div class="form-group full">
+              <label>Problem Details</label>
+              <textarea id="roProblemDetails" rows="3" readonly></textarea>
             </div>
-            <div class="form-group">
-              <label>💰 Total Expense (₹)</label>
-              <input type="text" name="totalExpense" id="totalExpense" readonly placeholder="Auto calculated" />
-            </div>
-
           </div>
-        </div>
 
-        <button type="submit" id="submitBtn">Submit Support Ticket</button>
-        <div id="messageBox"></div>
-      </form>
+          <div class="section-title">Parts Changed</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Parts Changed (describe what was replaced/repaired)</label>
+              <textarea id="partsChanged" name="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed, connector soldered..."></textarea>
+            </div>
+          </div>
+
+          <div class="section-title expense-title">Expense Details</div>
+          <div class="expense-box">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>🚗 Travel Expense (₹)</label>
+                <input type="number" id="travelExpense" name="travelExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+              </div>
+              <div class="form-group">
+                <label>🍽️ Food Expense (₹)</label>
+                <input type="number" id="foodExpense" name="foodExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+              </div>
+              <div class="form-group">
+                <label>🔧 Parts / Material Expense (₹)</label>
+                <input type="number" id="partsExpense" name="partsExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+              </div>
+              <div class="form-group">
+                <label>📦 Other Expense (₹)</label>
+                <input type="number" id="otherExpense" name="otherExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
+              </div>
+              <div class="form-group full">
+                <label>💰 Total Expense (₹)</label>
+                <input type="text" id="totalExpenseDisplay" readonly placeholder="Auto calculated" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">Remarks</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Technician Remarks</label>
+              <textarea id="remarks" name="remarks" rows="3" placeholder="Any notes or observations..."></textarea>
+            </div>
+          </div>
+
+          <!-- Final Submit Toggle -->
+          <div class="final-submit-box">
+            <div>
+              <label>
+                <input type="checkbox" id="finalSubmitCheck" />
+                Mark as Final Submit (Close Ticket)
+              </label>
+              <p>⚠️ Once finally submitted, ticket cannot be edited further.</p>
+            </div>
+          </div>
+
+          <button type="button" onclick="saveTicket(false)" id="saveBtn">💾 Save Progress</button>
+          <button type="button" onclick="saveTicket(true)" id="finalBtn" style="background:linear-gradient(135deg,#7f1d1d,#b91c1c,#dc2626);margin-top:10px;">✅ Final Submit & Close Ticket</button>
+          <div id="updateMsg"></div>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Back Link -->
+    <div style="text-align:center;margin-top:18px;">
+      <a href="index.html" style="color:#2563eb;font-weight:700;font-size:14px;text-decoration:none;">← Raise New Ticket</a>
     </div>
   </div>
-  <script src="app.js"></script>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbw_UiQf5EJTJuKeFN21Xg4YkLo6O5je2iuj--BXjoJQQfuLGrd1L1hrcKtv1ZoMdpA/exec";
+
+    async function fetchTicket() {
+      const id = document.getElementById("searchId").value.trim().toUpperCase();
+      const msg = document.getElementById("searchMsg");
+      if (!id) { showMsg(msg, "error", "Please enter a Ticket ID"); return; }
+
+      msg.className = "";
+      msg.style.display = "none";
+      const btn = document.querySelector(".search-bar button");
+      btn.disabled = true;
+      btn.innerText = "Fetching...";
+
+      try {
+        const res  = await fetch(`${API_URL}?action=getTicketById&ticketId=${id}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+        populateForm(data.ticket);
+      } catch (err) {
+        showMsg(msg, "error", "Error: " + err.message);
+      }
+      btn.disabled = false;
+      btn.innerText = "🔍 Fetch Ticket";
+    }
+
+    function populateForm(t) {
+      document.getElementById("ticketSection").classList.remove("hidden");
+      document.getElementById("ticketIdHidden").value = t.ticketId;
+
+      // Info bar
+      const statusClass = t.status === "Closed" ? "status-closed" : t.status === "Assigned" ? "status-assigned" : "status-open";
+      document.getElementById("infoBar").innerHTML = `
+        <div class="info-item"><label>Ticket ID</label><span>${t.ticketId}</span></div>
+        <div class="info-item"><label>Raised At</label><span>${t.requestTime}</span></div>
+        <div class="info-item"><label>Status</label><span class="status-badge ${statusClass}">${t.status}</span></div>
+        <div class="info-item"><label>Technician</label><span>${t.technicianName}</span></div>
+        <div class="info-item"><label>Customer</label><span>${t.customerName}</span></div>
+        <div class="info-item"><label>Location</label><span>${t.location}</span></div>
+      `;
+
+      // Read-only fields
+      document.getElementById("roProblemType").value    = t.problemType;
+      document.getElementById("roBatteryModel").value   = t.batteryModel;
+      document.getElementById("roProblemDetails").value = t.problemDetails;
+
+      // Editable fields
+      document.getElementById("partsChanged").value  = t.partsChanged  || "";
+      document.getElementById("travelExpense").value  = t.travelExpense || "";
+      document.getElementById("foodExpense").value    = t.foodExpense   || "";
+      document.getElementById("partsExpense").value   = t.partsExpense  || "";
+      document.getElementById("otherExpense").value   = t.otherExpense  || "";
+      document.getElementById("remarks").value        = t.remarks       || "";
+      calcUpdateTotal();
+
+      // If already closed, disable everything
+      if (t.finalSubmit === "Yes") {
+        document.getElementById("closedWarning").classList.remove("hidden");
+        document.getElementById("updateForm").querySelectorAll("input:not([readonly]), textarea, button").forEach(el => el.disabled = true);
+      } else {
+        document.getElementById("closedWarning").classList.add("hidden");
+      }
+    }
+
+    function calcUpdateTotal() {
+      const travel = parseFloat(document.getElementById("travelExpense").value) || 0;
+      const food   = parseFloat(document.getElementById("foodExpense").value)   || 0;
+      const parts  = parseFloat(document.getElementById("partsExpense").value)  || 0;
+      const other  = parseFloat(document.getElementById("otherExpense").value)  || 0;
+      const total  = travel + food + parts + other;
+      document.getElementById("totalExpenseDisplay").value = total > 0 ? "₹" + total.toFixed(2) : "";
+    }
+
+    async function saveTicket(isFinal) {
+      const ticketId = document.getElementById("ticketIdHidden").value;
+      if (!ticketId) return;
+
+      const confirmed = isFinal
+        ? confirm("Are you sure you want to FINALLY SUBMIT this ticket? This action cannot be undone.")
+        : true;
+      if (!confirmed) return;
+
+      const saveBtn  = document.getElementById("saveBtn");
+      const finalBtn = document.getElementById("finalBtn");
+      const msg      = document.getElementById("updateMsg");
+      saveBtn.disabled  = true;
+      finalBtn.disabled = true;
+      saveBtn.innerText = "Saving...";
+
+      const travel = parseFloat(document.getElementById("travelExpense").value) || 0;
+      const food   = parseFloat(document.getElementById("foodExpense").value)   || 0;
+      const parts  = parseFloat(document.getElementById("partsExpense").value)  || 0;
+      const other  = parseFloat(document.getElementById("otherExpense").value)  || 0;
+
+      const payload = {
+        action:        "updateTicket",
+        ticketId:      ticketId,
+        travelExpense: travel,
+        foodExpense:   food,
+        partsExpense:  parts,
+        otherExpense:  other,
+        partsChanged:  document.getElementById("partsChanged").value.trim(),
+        remarks:       document.getElementById("remarks").value.trim(),
+        finalSubmit:   isFinal ? "Yes" : "No"
+      };
+
+      try {
+        const res    = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.message);
+        showMsg(msg, "success", result.message + (result.total ? ` | Total: ₹${result.total}` : ""));
+        if (isFinal) {
+          document.getElementById("updateForm").querySelectorAll("input:not([readonly]), textarea, button").forEach(el => el.disabled = true);
+          document.getElementById("closedWarning").classList.remove("hidden");
+        }
+      } catch (err) {
+        showMsg(msg, "error", "Error: " + err.message);
+      }
+
+      saveBtn.disabled  = false;
+      finalBtn.disabled = false;
+      saveBtn.innerText = "💾 Save Progress";
+    }
+
+    function showMsg(el, type, text) {
+      el.className = type;
+      el.innerText = text;
+      el.style.display = "block";
+    }
+
+    // Allow pressing Enter in search box
+    document.getElementById("searchId").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") fetchTicket();
+    });
+
+    // Auto-fill & fetch if ?id= present in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlId = urlParams.get("id");
+    if (urlId) {
+      document.getElementById("searchId").value = urlId.toUpperCase();
+      fetchTicket();
+    }
+  </script>
 </body>
 </html>
