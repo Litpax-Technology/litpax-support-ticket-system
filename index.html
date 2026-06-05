@@ -362,8 +362,18 @@
 
     const urlId = new URLSearchParams(window.location.search).get("id");
     if (urlId) {
-      document.getElementById("searchId").value = urlId.toUpperCase();
-      setTimeout(() => doFetch(urlId.toUpperCase()), 300);
+      const uid = urlId.toUpperCase();
+      document.getElementById("searchId").value = uid;
+      // Wait for dropdown to load then auto-select & fetch
+      const trySelect = setInterval(() => {
+        const sel = document.getElementById("ticketDropdown");
+        const opt = sel.querySelector(`option[value="${uid}"]`);
+        if (opt) {
+          sel.value = uid;
+          clearInterval(trySelect);
+        }
+      }, 100);
+      setTimeout(() => { clearInterval(trySelect); doFetch(uid); }, 1500);
     }
   </script>
 </body>
