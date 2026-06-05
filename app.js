@@ -4,24 +4,12 @@ const form       = document.getElementById("supportForm");
 const submitBtn  = document.getElementById("submitBtn");
 const messageBox = document.getElementById("messageBox");
 
-function calcTotal() {
-  const travel = parseFloat(form.travelExpense.value) || 0;
-  const parts  = parseFloat(form.partsExpense.value)  || 0;
-  const other  = parseFloat(form.otherExpense.value)  || 0;
-  const total  = travel + parts + other;
-  document.getElementById("totalExpense").value = total > 0 ? "₹" + total.toFixed(2) : "";
-}
-
 form.addEventListener("submit", async function(e) {
   e.preventDefault();
   submitBtn.disabled  = true;
   submitBtn.innerText = "Submitting...";
-  messageBox.className    = "";
+  messageBox.className     = "";
   messageBox.style.display = "none";
-
-  const travel = parseFloat(form.travelExpense.value) || 0;
-  const parts  = parseFloat(form.partsExpense.value)  || 0;
-  const other  = parseFloat(form.otherExpense.value)  || 0;
 
   const data = {
     technicianName:   form.technicianName.value.trim(),
@@ -34,10 +22,10 @@ form.addEventListener("submit", async function(e) {
     problemType:      form.problemType.value,
     problemDetails:   form.problemDetails.value.trim(),
     priority:         form.priority.value,
-    travelExpense:    travel,
-    partsExpense:     parts,
-    otherExpense:     other,
-    totalExpense:     travel + parts + other
+    travelExpense:    0,
+    partsExpense:     0,
+    otherExpense:     0,
+    totalExpense:     0
   };
 
   try {
@@ -46,13 +34,13 @@ form.addEventListener("submit", async function(e) {
     if (result.success) {
       messageBox.className = "success";
       messageBox.innerHTML = `
-        Ticket Created: <b>${result.ticketId}</b><br/>
-        <a href="update.html?id=${result.ticketId}" style="color:#15803d;font-weight:800;text-decoration:underline;font-size:13px;">
-          → Update this ticket later
+        ✅ Ticket Created: <b>${result.ticketId}</b><br/>
+        <a href="index.html?id=${result.ticketId}"
+           style="color:#15803d;font-weight:800;text-decoration:underline;font-size:13px;display:inline-block;margin-top:6px;">
+          → Update this ticket now
         </a>
       `;
       form.reset();
-      document.getElementById("totalExpense").value = "";
     } else {
       throw new Error(result.message || "Something went wrong");
     }
