@@ -221,7 +221,7 @@
         problemType:       form.problemType.value,
         problemDetails:    form.problemDetails.value.trim(),
         priority:          form.priority.value,
-        companyHelpNeeded: form.companyHelpNeeded.value,
+        companyHelpNeeded: document.querySelector('input[name="companyHelpNeeded"]:checked').value,
         travelExpense: 0, foodExpense: 0, partsExpense: 0, otherExpense: 0, totalExpense: 0
       };
 
