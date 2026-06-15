@@ -18,9 +18,10 @@
     }
     .ticket-info-bar .info-item span { font-size: 14px; color: #0f172a; font-weight: 700; }
     .status-badge { display:inline-block; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:800; }
-    .status-open     { background:#fef3c7; color:#92400e; }
-    .status-assigned { background:#dbeafe; color:#1e40af; }
-    .status-closed   { background:#dcfce7; color:#166534; }
+    .status-open               { background:#fef3c7; color:#92400e; }
+    .status-assigned           { background:#dbeafe; color:#1e40af; }
+    .status-closed             { background:#dcfce7; color:#166534; }
+    .status-pending-assignment { background:#fce7f3; color:#831843; }
     .hidden { display:none !important; }
     .selector-wrap { margin-bottom: 24px; }
     .selector-label { font-size:12px; font-weight:900; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
@@ -54,6 +55,23 @@
       background:#fef2f2; border:1.5px solid #fecaca; border-radius:18px;
       padding:20px; text-align:center; color:#b91c1c; font-weight:800; font-size:15px; margin-bottom:20px;
     }
+    .pending-overlay {
+      background:linear-gradient(135deg,#fdf2f8,#fce7f3);
+      border:1.5px solid #f9a8d4; border-radius:18px;
+      padding:24px; text-align:center; margin-bottom:20px;
+    }
+    .pending-overlay .pending-icon { font-size:36px; margin-bottom:10px; }
+    .pending-overlay h3 { color:#831843; font-size:16px; font-weight:900; margin-bottom:6px; }
+    .pending-overlay p { color:#9d174d; font-size:13px; font-weight:600; }
+    .assigned-banner {
+      background:linear-gradient(135deg,#eff6ff,#dbeafe);
+      border:1.5px solid #93c5fd; border-radius:18px;
+      padding:16px 20px; margin-bottom:20px;
+      display:flex; align-items:center; gap:14px;
+    }
+    .assigned-banner .ab-icon { font-size:28px; }
+    .assigned-banner .ab-text h4 { color:#1e40af; font-size:14px; font-weight:900; margin-bottom:2px; }
+    .assigned-banner .ab-text p { color:#3b82f6; font-size:13px; font-weight:600; }
     .new-ticket-btn {
       display:block; text-align:center; margin-top:28px; padding:16px;
       background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #86efac;
@@ -107,6 +125,22 @@
       <!-- Ticket Form -->
       <div id="ticketSection" class="hidden">
         <div class="ticket-info-bar" id="infoBar"></div>
+
+        <!-- Pending Assignment -->
+        <div id="pendingOverlay" class="pending-overlay hidden">
+          <div class="pending-icon">⏳</div>
+          <h3>Company Technician Assignment Pending</h3>
+          <p>Aapne Litpax company help request ki hai. Jab tak technician assign nahi hota, ticket update nahi ho sakta.</p>
+        </div>
+
+        <!-- Assigned Banner -->
+        <div id="assignedBanner" class="assigned-banner hidden">
+          <div class="ab-icon">👨‍🔧</div>
+          <div class="ab-text">
+            <h4>Company Technician Assigned</h4>
+            <p id="assignedToText">—</p>
+          </div>
+        </div>
 
         <div id="closedWarning" class="closed-overlay hidden">
           ✅ This ticket has been <b>Finally Submitted</b> and is now closed. No further updates allowed.
@@ -196,14 +230,13 @@
         </form>
       </div>
 
-      <!-- Create New Ticket -->
       <a href="update.html" class="new-ticket-btn">＋ Create New Service Request</a>
 
     </div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwL58wSLfqUc8wqTLmVoP0iJhgN64U2YkVrB-J7P4eMikxR50MmlK6yv2NoRaFRyVc3/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyzzj_-vHZNhZ1EcksWtpTyzERb1FZU_rbW2RL6Z3yV2E4RUSaG0zigCMXuW2VFeW9m/exec";
 
     async function loadTicketList() {
       try {
@@ -212,7 +245,6 @@
         const sel  = document.getElementById("ticketDropdown");
 
         if (data.success && data.tickets.length > 0) {
-          // Only show non-finally-submitted tickets
           const active = data.tickets.filter(t => t.finalSubmit !== "Yes");
           if (active.length > 0) {
             active.forEach(t => {
@@ -265,7 +297,15 @@
       document.getElementById("ticketSection").classList.remove("hidden");
       document.getElementById("ticketIdHidden").value = t.ticketId;
 
-      const sc = t.status === "Closed" ? "status-closed" : t.status === "Assigned" ? "status-assigned" : "status-open";
+      const isPending = t.status === "Pending Assignment";
+      const isClosed  = t.finalSubmit === "Yes";
+
+      // Status badge class
+      let sc = "status-open";
+      if (t.status === "Closed")             sc = "status-closed";
+      else if (t.status === "Assigned")      sc = "status-assigned";
+      else if (isPending)                    sc = "status-pending-assignment";
+
       document.getElementById("infoBar").innerHTML = `
         <div class="info-item"><label>Ticket ID</label><span>${t.ticketId}</span></div>
         <div class="info-item"><label>Raised At</label><span>${t.requestTime}</span></div>
@@ -274,6 +314,17 @@
         <div class="info-item"><label>Customer</label><span>${t.customerName}</span></div>
         <div class="info-item"><label>Location</label><span>${t.location}</span></div>
       `;
+
+      // Pending overlay
+      document.getElementById("pendingOverlay").classList.toggle("hidden", !isPending);
+
+      // Assigned banner
+      if (t.assignedTo && t.assignedTo !== "") {
+        document.getElementById("assignedBanner").classList.remove("hidden");
+        document.getElementById("assignedToText").innerText = t.assignedTo;
+      } else {
+        document.getElementById("assignedBanner").classList.add("hidden");
+      }
 
       document.getElementById("roProblemType").value    = t.problemType;
       document.getElementById("roBatteryModel").value   = t.batteryModel;
@@ -287,11 +338,13 @@
       document.getElementById("remarks").value          = t.remarks       || "";
       calcUpdateTotal();
 
-      const isClosed = t.finalSubmit === "Yes";
       document.getElementById("closedWarning").classList.toggle("hidden", !isClosed);
+
+      // Lock form if closed OR pending
+      const shouldLock = isClosed || isPending;
       document.getElementById("updateForm")
         .querySelectorAll("input:not([readonly]),textarea,button")
-        .forEach(el => el.disabled = isClosed);
+        .forEach(el => el.disabled = shouldLock);
     }
 
     function calcUpdateTotal() {
@@ -315,16 +368,16 @@
       saveBtn.innerText = "Saving...";
 
       const payload = {
-        action:        "updateTicket",
+        action:         "updateTicket",
         ticketId,
-        travelExpense: parseFloat(document.getElementById("travelExpense").value) || 0,
-        foodExpense:   parseFloat(document.getElementById("foodExpense").value)   || 0,
-        partsExpense:  parseFloat(document.getElementById("partsExpense").value)  || 0,
-        otherExpense:  parseFloat(document.getElementById("otherExpense").value)  || 0,
+        travelExpense:  parseFloat(document.getElementById("travelExpense").value) || 0,
+        foodExpense:    parseFloat(document.getElementById("foodExpense").value)   || 0,
+        partsExpense:   parseFloat(document.getElementById("partsExpense").value)  || 0,
+        otherExpense:   parseFloat(document.getElementById("otherExpense").value)  || 0,
         expenseRemarks: document.getElementById("expenseRemarks").value.trim(),
-        partsChanged:  document.getElementById("partsChanged").value.trim(),
-        remarks:       document.getElementById("remarks").value.trim(),
-        finalSubmit:   isFinal ? "Yes" : "No"
+        partsChanged:   document.getElementById("partsChanged").value.trim(),
+        remarks:        document.getElementById("remarks").value.trim(),
+        finalSubmit:    isFinal ? "Yes" : "No"
       };
 
       try {
@@ -337,7 +390,6 @@
             .querySelectorAll("input:not([readonly]),textarea,button")
             .forEach(el => el.disabled = true);
           document.getElementById("closedWarning").classList.remove("hidden");
-          // Remove from dropdown
           const sel = document.getElementById("ticketDropdown");
           const opt = sel.querySelector(`option[value="${ticketId}"]`);
           if (opt) opt.remove();
@@ -364,14 +416,10 @@
     if (urlId) {
       const uid = urlId.toUpperCase();
       document.getElementById("searchId").value = uid;
-      // Wait for dropdown to load then auto-select & fetch
       const trySelect = setInterval(() => {
         const sel = document.getElementById("ticketDropdown");
         const opt = sel.querySelector(`option[value="${uid}"]`);
-        if (opt) {
-          sel.value = uid;
-          clearInterval(trySelect);
-        }
+        if (opt) { sel.value = uid; clearInterval(trySelect); }
       }, 100);
       setTimeout(() => { clearInterval(trySelect); doFetch(uid); }, 1500);
     }
