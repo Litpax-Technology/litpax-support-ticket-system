@@ -11,61 +11,68 @@
       text-align: center;
       padding: 40px 28px;
     }
-    .success-card .tick {
-      font-size: 56px;
-      margin-bottom: 16px;
-    }
-    .success-card h2 {
-      font-size: 22px;
-      font-weight: 900;
-      color: #0f172a;
-      margin-bottom: 8px;
-    }
-    .success-card p {
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 28px;
-    }
+    .success-card .tick { font-size: 56px; margin-bottom: 16px; }
+    .success-card h2 { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 8px; }
+    .success-card p { color: #64748b; font-size: 14px; font-weight: 600; margin-bottom: 28px; }
     .success-card .ticket-id-badge {
       display: inline-block;
-      background: #f0fdf4;
-      border: 1.5px solid #86efac;
-      color: #15803d;
-      font-size: 20px;
-      font-weight: 900;
-      padding: 10px 28px;
-      border-radius: 999px;
-      margin-bottom: 32px;
-      letter-spacing: 1px;
+      background: #f0fdf4; border: 1.5px solid #86efac;
+      color: #15803d; font-size: 20px; font-weight: 900;
+      padding: 10px 28px; border-radius: 999px;
+      margin-bottom: 32px; letter-spacing: 1px;
     }
-    .success-actions {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
+    .success-actions { display: flex; gap: 14px; flex-wrap: wrap; }
     .success-actions a {
-      flex: 1;
-      min-width: 160px;
-      padding: 16px;
-      border-radius: 18px;
-      font-size: 15px;
-      font-weight: 900;
-      text-decoration: none;
-      text-align: center;
-      transition: .25s ease;
+      flex: 1; min-width: 160px; padding: 16px; border-radius: 18px;
+      font-size: 15px; font-weight: 900; text-decoration: none;
+      text-align: center; transition: .25s ease;
     }
     .success-actions a:hover { transform: translateY(-2px); }
     .btn-update {
       background: linear-gradient(135deg,#0f172a,#1e3a8a);
-      color: #fff !important;
-      box-shadow: 0 10px 24px rgba(30,58,138,.25);
+      color: #fff !important; box-shadow: 0 10px 24px rgba(30,58,138,.25);
     }
     .btn-new {
       background: linear-gradient(135deg,#14532d,#15803d);
-      color: #fff !important;
-      box-shadow: 0 10px 24px rgba(21,128,61,.2);
+      color: #fff !important; box-shadow: 0 10px 24px rgba(21,128,61,.2);
     }
+    .help-toggle-box {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1.5px solid #93c5fd;
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin-top: 4px;
+    }
+    .help-toggle-box .help-title {
+      font-size: 14px; font-weight: 900; color: #1e40af; margin-bottom: 14px;
+    }
+    .help-toggle-box .help-subtitle {
+      font-size: 12px; color: #3b82f6; font-weight: 600; margin-bottom: 16px; margin-top: -8px;
+    }
+    .help-options { display: flex; gap: 16px; }
+    .help-option {
+      flex: 1; border: 2px solid #bfdbfe; border-radius: 14px;
+      padding: 14px 18px; cursor: pointer; transition: .2s;
+      display: flex; align-items: center; gap: 12px;
+      background: #fff; font-weight: 800; font-size: 15px; color: #1e3a8a;
+    }
+    .help-option input[type="radio"] { display: none; }
+    .help-option .dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid #93c5fd; background: #fff;
+      flex-shrink: 0; transition: .2s; position: relative;
+    }
+    .help-option input:checked ~ .dot {
+      border-color: #2563eb; background: #2563eb;
+    }
+    .help-option input:checked ~ .dot::after {
+      content: ''; position: absolute; top: 4px; left: 4px;
+      width: 8px; height: 8px; border-radius: 50%; background: #fff;
+    }
+    .help-option.selected-no  { border-color: #86efac; background: #f0fdf4; color: #15803d; }
+    .help-option.selected-yes { border-color: #2563eb; background: #eff6ff; color: #1e40af; }
+    .help-option.selected-no  .dot { border-color: #15803d; background: #15803d; }
+    .help-option.selected-yes .dot { border-color: #2563eb; background: #2563eb; }
   </style>
 </head>
 <body>
@@ -79,8 +86,8 @@
         <span>Litpax Support</span>
       </div>
 
-      <!-- Form -->
       <form id="supportForm">
+
         <div class="section-title">Technician Details</div>
         <div class="form-grid">
           <div class="form-group">
@@ -152,11 +159,34 @@
           </div>
         </div>
 
+        <!-- Company Help Needed -->
+        <div class="section-title">Company Support</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <div class="help-toggle-box">
+              <div class="help-title">🏭 Help Needed from Litpax Company?</div>
+              <div class="help-subtitle">Kya aapko is problem mein Litpax ki company team ki zarurat hai?</div>
+              <div class="help-options">
+                <label class="help-option selected-no" id="optNo">
+                  <input type="radio" name="companyHelpNeeded" value="No" checked onchange="toggleHelp()" />
+                  <div class="dot"></div>
+                  ✅ No — Main khud handle kar lunga
+                </label>
+                <label class="help-option" id="optYes">
+                  <input type="radio" name="companyHelpNeeded" value="Yes" onchange="toggleHelp()" />
+                  <div class="dot"></div>
+                  🆘 Yes — Litpax team ki zarurat hai
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button type="submit" id="submitBtn">Submit Support Ticket</button>
         <div id="errorBox" style="margin-top:14px;padding:14px;border-radius:14px;font-size:14px;font-weight:700;display:none;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;"></div>
       </form>
 
-      <!-- Success Card (hidden until submit) -->
+      <!-- Success Card -->
       <div class="success-card" id="successCard">
         <div class="tick">✅</div>
         <h2>Ticket Created Successfully!</h2>
@@ -172,10 +202,16 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwL58wSLfqUc8wqTLmVoP0iJhgN64U2YkVrB-J7P4eMikxR50MmlK6yv2NoRaFRyVc3/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyzzj_-vHZNhZ1EcksWtpTyzERb1FZU_rbW2RL6Z3yV2E4RUSaG0zigCMXuW2VFeW9m/exec";
     const form      = document.getElementById("supportForm");
     const submitBtn = document.getElementById("submitBtn");
     const errorBox  = document.getElementById("errorBox");
+
+    function toggleHelp() {
+      const val = document.querySelector('input[name="companyHelpNeeded"]:checked').value;
+      document.getElementById("optNo").className  = "help-option" + (val === "No"  ? " selected-no"  : "");
+      document.getElementById("optYes").className = "help-option" + (val === "Yes" ? " selected-yes" : "");
+    }
 
     form.addEventListener("submit", async function(e) {
       e.preventDefault();
@@ -184,28 +220,28 @@
       errorBox.style.display = "none";
 
       const data = {
-        technicianName:   form.technicianName.value.trim(),
-        technicianMobile: form.technicianMobile.value.trim(),
-        customerName:     form.customerName.value.trim(),
-        customerMobile:   form.customerMobile.value.trim(),
-        location:         form.location.value.trim(),
-        batteryModel:     form.batteryModel.value.trim(),
-        serialNumber:     form.serialNumber.value.trim(),
-        problemType:      form.problemType.value,
-        problemDetails:   form.problemDetails.value.trim(),
-        priority:         form.priority.value,
-        travelExpense:    0,
-        foodExpense:      0,
-        partsExpense:     0,
-        otherExpense:     0,
-        totalExpense:     0
+        technicianName:    form.technicianName.value.trim(),
+        technicianMobile:  form.technicianMobile.value.trim(),
+        customerName:      form.customerName.value.trim(),
+        customerMobile:    form.customerMobile.value.trim(),
+        location:          form.location.value.trim(),
+        batteryModel:      form.batteryModel.value.trim(),
+        serialNumber:      form.serialNumber.value.trim(),
+        problemType:       form.problemType.value,
+        problemDetails:    form.problemDetails.value.trim(),
+        priority:          form.priority.value,
+        companyHelpNeeded: form.companyHelpNeeded.value,
+        travelExpense:     0,
+        foodExpense:       0,
+        partsExpense:      0,
+        otherExpense:      0,
+        totalExpense:      0
       };
 
       try {
         const res    = await fetch(API_URL, { method: "POST", body: JSON.stringify(data) });
         const result = await res.json();
         if (result.success) {
-          // Hide form, show success card
           form.style.display = "none";
           document.querySelector(".form-header").style.display = "none";
           document.getElementById("ticketIdDisplay").innerText = result.ticketId;
