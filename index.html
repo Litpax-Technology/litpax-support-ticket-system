@@ -6,24 +6,29 @@
   <title>Litpax Service Support</title>
   <link rel="stylesheet" href="style.css" />
   <style>
+    .nav-bar { display:flex; gap:10px; margin-bottom:22px; }
+    .nav-btn {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:10px 20px; border-radius:12px; font-size:13px;
+      font-weight:800; text-decoration:none; transition:.2s;
+      border:1.5px solid #e2e8f0; background:#f8fafc; color:#334155;
+    }
+    .nav-btn:hover { background:#e2e8f0; transform:translateY(-1px); }
     .ticket-info-bar {
-      background: linear-gradient(135deg,#eff6ff,#f0fdf4);
-      border: 1.5px solid #bfdbfe; border-radius: 18px;
-      padding: 18px 20px; margin-bottom: 24px;
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+      background:linear-gradient(135deg,#eff6ff,#f0fdf4);
+      border:1.5px solid #bfdbfe; border-radius:18px;
+      padding:18px 20px; margin-bottom:24px;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
     }
-    .ticket-info-bar .info-item label {
-      font-size: 11px; color: #64748b; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px;
-    }
-    .ticket-info-bar .info-item span { font-size: 14px; color: #0f172a; font-weight: 700; }
-    .status-badge { display:inline-block; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:800; }
+    .ticket-info-bar .info-item label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:.8px; margin-bottom:4px; }
+    .ticket-info-bar .info-item span  { font-size:14px; color:#0f172a; font-weight:700; }
+    .status-badge              { display:inline-block; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:800; }
     .status-open               { background:#fef3c7; color:#92400e; }
     .status-assigned           { background:#dbeafe; color:#1e40af; }
     .status-closed             { background:#dcfce7; color:#166534; }
     .status-pending-assignment { background:#fce7f3; color:#831843; }
     .hidden { display:none !important; }
-    .selector-wrap { margin-bottom: 24px; }
+    .selector-wrap  { margin-bottom:24px; }
     .selector-label { font-size:12px; font-weight:900; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
     .ticket-select-row { display:flex; gap:12px; align-items:center; }
     .ticket-select-row select {
@@ -62,7 +67,7 @@
     }
     .pending-overlay .pending-icon { font-size:36px; margin-bottom:10px; }
     .pending-overlay h3 { color:#831843; font-size:16px; font-weight:900; margin-bottom:6px; }
-    .pending-overlay p { color:#9d174d; font-size:13px; font-weight:600; }
+    .pending-overlay p  { color:#9d174d; font-size:13px; font-weight:600; }
     .assigned-banner {
       background:linear-gradient(135deg,#eff6ff,#dbeafe);
       border:1.5px solid #93c5fd; border-radius:18px;
@@ -71,7 +76,7 @@
     }
     .assigned-banner .ab-icon { font-size:28px; }
     .assigned-banner .ab-text h4 { color:#1e40af; font-size:14px; font-weight:900; margin-bottom:2px; }
-    .assigned-banner .ab-text p { color:#3b82f6; font-size:13px; font-weight:600; }
+    .assigned-banner .ab-text p  { color:#3b82f6; font-size:13px; font-weight:600; }
     .new-ticket-btn {
       display:block; text-align:center; margin-top:28px; padding:16px;
       background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #86efac;
@@ -82,15 +87,19 @@
     @media(max-width:720px) {
       .ticket-info-bar { grid-template-columns:1fr 1fr; }
       .ticket-select-row { flex-direction:column; }
-      .btn-load { width:100%; }
+      .btn-load,.btn-go { width:100%; }
       .manual-row { flex-direction:column; }
-      .btn-go { width:100%; }
     }
   </style>
 </head>
 <body>
   <div class="app-wrapper">
     <div class="form-card">
+
+      <div class="nav-bar">
+        <a href="index.html" class="nav-btn">🏠 Home</a>
+        <a href="update.html" class="nav-btn">← Create New Ticket</a>
+      </div>
 
       <div class="form-header">
         <div>
@@ -100,11 +109,9 @@
         <span>Litpax Support</span>
       </div>
 
-      <!-- Ticket Selector -->
       <div class="selector-wrap">
         <div class="selector-label">Select Ticket</div>
         <div id="loadingDots" class="loading-dots">⏳ Loading tickets...</div>
-
         <div id="selectorUI" class="hidden">
           <div class="ticket-select-row">
             <select id="ticketDropdown">
@@ -122,18 +129,15 @@
 
       <div id="searchMsg"></div>
 
-      <!-- Ticket Form -->
       <div id="ticketSection" class="hidden">
         <div class="ticket-info-bar" id="infoBar"></div>
 
-        <!-- Pending Assignment -->
         <div id="pendingOverlay" class="pending-overlay hidden">
           <div class="pending-icon">⏳</div>
           <h3>Company Technician Assignment Pending</h3>
           <p>Aapne Litpax company help request ki hai. Jab tak technician assign nahi hota, ticket update nahi ho sakta.</p>
         </div>
 
-        <!-- Assigned Banner -->
         <div id="assignedBanner" class="assigned-banner hidden">
           <div class="ab-icon">👨‍🔧</div>
           <div class="ab-text">
@@ -168,8 +172,8 @@
           <div class="section-title">Parts Changed</div>
           <div class="form-grid">
             <div class="form-group full">
-              <label>Parts Changed (describe what was replaced/repaired)</label>
-              <textarea id="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed, connector soldered..."></textarea>
+              <label>Parts Changed</label>
+              <textarea id="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed..."></textarea>
             </div>
           </div>
 
@@ -198,7 +202,7 @@
               </div>
               <div class="form-group full">
                 <label>📝 Expense Remarks</label>
-                <input type="text" id="expenseRemarks" placeholder="e.g. Toll charges included, food during site visit..." />
+                <input type="text" id="expenseRemarks" placeholder="e.g. Toll charges included..." />
               </div>
             </div>
           </div>
@@ -236,14 +240,13 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyzzj_-vHZNhZ1EcksWtpTyzERb1FZU_rbW2RL6Z3yV2E4RUSaG0zigCMXuW2VFeW9m/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwUad3ODeIzG2JVJ3eJizpRV7aAottf7J6efQrz74Pv-zFI0PoqlY0fjns0Qo0jyxc/exec";
 
     async function loadTicketList() {
       try {
         const res  = await fetch(`${API_URL}?action=getTickets`);
         const data = await res.json();
         const sel  = document.getElementById("ticketDropdown");
-
         if (data.success && data.tickets.length > 0) {
           const active = data.tickets.filter(t => t.finalSubmit !== "Yes");
           if (active.length > 0) {
@@ -255,14 +258,11 @@
             });
           } else {
             const o = document.createElement("option");
-            o.textContent = "No active tickets found";
-            o.disabled = true;
+            o.textContent = "No active tickets found"; o.disabled = true;
             sel.appendChild(o);
           }
         }
-      } catch (err) {
-        console.error("Could not load tickets:", err);
-      }
+      } catch(err) { console.error(err); }
       document.getElementById("loadingDots").classList.add("hidden");
       document.getElementById("selectorUI").classList.remove("hidden");
     }
@@ -288,7 +288,7 @@
         if (!data.success) throw new Error(data.message);
         populateForm(data.ticket);
         document.getElementById("ticketSection").scrollIntoView({ behavior:"smooth", block:"start" });
-      } catch (err) {
+      } catch(err) {
         showMsg(msg, "error", "Error: " + err.message);
       }
     }
@@ -300,11 +300,10 @@
       const isPending = t.status === "Pending Assignment";
       const isClosed  = t.finalSubmit === "Yes";
 
-      // Status badge class
       let sc = "status-open";
-      if (t.status === "Closed")             sc = "status-closed";
-      else if (t.status === "Assigned")      sc = "status-assigned";
-      else if (isPending)                    sc = "status-pending-assignment";
+      if (t.status === "Closed")   sc = "status-closed";
+      else if (t.status === "Assigned") sc = "status-assigned";
+      else if (isPending)          sc = "status-pending-assignment";
 
       document.getElementById("infoBar").innerHTML = `
         <div class="info-item"><label>Ticket ID</label><span>${t.ticketId}</span></div>
@@ -315,10 +314,8 @@
         <div class="info-item"><label>Location</label><span>${t.location}</span></div>
       `;
 
-      // Pending overlay
       document.getElementById("pendingOverlay").classList.toggle("hidden", !isPending);
 
-      // Assigned banner
       if (t.assignedTo && t.assignedTo !== "") {
         document.getElementById("assignedBanner").classList.remove("hidden");
         document.getElementById("assignedToText").innerText = t.assignedTo;
@@ -329,18 +326,16 @@
       document.getElementById("roProblemType").value    = t.problemType;
       document.getElementById("roBatteryModel").value   = t.batteryModel;
       document.getElementById("roProblemDetails").value = t.problemDetails;
-      document.getElementById("partsChanged").value     = t.partsChanged  || "";
-      document.getElementById("travelExpense").value    = t.travelExpense || "";
-      document.getElementById("foodExpense").value      = t.foodExpense   || "";
-      document.getElementById("partsExpense").value     = t.partsExpense  || "";
-      document.getElementById("otherExpense").value     = t.otherExpense  || "";
+      document.getElementById("partsChanged").value     = t.partsChanged   || "";
+      document.getElementById("travelExpense").value    = t.travelExpense  || "";
+      document.getElementById("foodExpense").value      = t.foodExpense    || "";
+      document.getElementById("partsExpense").value     = t.partsExpense   || "";
+      document.getElementById("otherExpense").value     = t.otherExpense   || "";
       document.getElementById("expenseRemarks").value   = t.expenseRemarks || "";
-      document.getElementById("remarks").value          = t.remarks       || "";
+      document.getElementById("remarks").value          = t.remarks        || "";
       calcUpdateTotal();
 
       document.getElementById("closedWarning").classList.toggle("hidden", !isClosed);
-
-      // Lock form if closed OR pending
       const shouldLock = isClosed || isPending;
       document.getElementById("updateForm")
         .querySelectorAll("input:not([readonly]),textarea,button")
@@ -394,7 +389,7 @@
           const opt = sel.querySelector(`option[value="${ticketId}"]`);
           if (opt) opt.remove();
         }
-      } catch (err) {
+      } catch(err) {
         showMsg(msg, "error", "Error: " + err.message);
       }
 
