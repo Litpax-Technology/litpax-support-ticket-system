@@ -175,6 +175,11 @@
               <label>Parts Changed</label>
               <textarea id="partsChanged" rows="3" placeholder="e.g. BMS replaced, 4 cells changed..."></textarea>
             </div>
+            <div class="form-group full">
+              <label>📸 Parts Photos</label>
+              <div id="partsPhotoList" class="photo-list"></div>
+              <button type="button" class="add-row-btn" onclick="addPhotoRow('partsPhotoList','parts')">+ Add Photo</button>
+            </div>
           </div>
 
           <div class="section-title expense-title">Expense Details</div>
@@ -204,6 +209,11 @@
                 <label>📝 Expense Remarks</label>
                 <input type="text" id="expenseRemarks" placeholder="e.g. Toll charges included..." />
               </div>
+              <div class="form-group full">
+                <label>📸 Expense Bills / Photos</label>
+                <div id="expensePhotoList" class="photo-list"></div>
+                <button type="button" class="add-row-btn" onclick="addPhotoRow('expensePhotoList','expense')">+ Add Photo</button>
+              </div>
             </div>
           </div>
 
@@ -232,6 +242,20 @@
           </button>
           <div id="updateMsg"></div>
         </form>
+
+        <!-- OWNER → TECHNICIAN PAYMENT (form ke bahar: close ke baad bhi chalega) -->
+        <div class="section-title pay-title">💵 Owner → Technician Payment</div>
+        <div class="payment-box">
+          <p class="pay-hint">Ticket open hone ke baad owner yahan technician ko di gayi payment installments record kar sakta hai. Ticket close hone ke baad bhi ye chalta rahega.</p>
+          <div id="paymentList"></div>
+          <button type="button" class="add-row-btn" onclick="addPaymentRow()">+ Add Payment Installment</button>
+          <div class="pay-total-bar">
+            <span>Total Paid:</span>
+            <span id="totalPaidDisplay">₹0</span>
+          </div>
+          <button type="button" id="savePayBtn" class="save-pay-btn" onclick="savePayment()">💾 Save Payment</button>
+          <div id="payMsg"></div>
+        </div>
       </div>
 
       <a href="update.html" class="new-ticket-btn">＋ Create New Service Request</a>
