@@ -359,6 +359,11 @@
       document.getElementById("remarks").value          = t.remarks        || "";
       calcUpdateTotal();
 
+      buildPhotoRows("expensePhotoList", "expense", t.expensePhotos);
+      buildPhotoRows("partsPhotoList",   "parts",   t.partsPhotos);
+      buildPaymentRows(t.payments);
+      calcTotalPaid();
+
       document.getElementById("closedWarning").classList.toggle("hidden", !isClosed);
       const shouldLock = isClosed || isPending;
       document.getElementById("updateForm")
@@ -396,6 +401,8 @@
         expenseRemarks: document.getElementById("expenseRemarks").value.trim(),
         partsChanged:   document.getElementById("partsChanged").value.trim(),
         remarks:        document.getElementById("remarks").value.trim(),
+        expensePhotos:  collectPhotos("expensePhotoList"),
+        partsPhotos:    collectPhotos("partsPhotoList"),
         finalSubmit:    isFinal ? "Yes" : "No"
       };
 
@@ -419,6 +426,173 @@
 
       saveBtn.disabled = finalBtn.disabled = false;
       saveBtn.innerText = "💾 Save Progress";
+    }
+
+    // ---------- PHOTO HANDLING ----------
+    function addPhotoRow(listId, category, existing) {
+      const list = document.getElementById(listId);
+      const row  = document.createElement("div");
+      row.className = "photo-row";
+      const hasUrl  = existing && existing.url;
+      const caption = existing && existing.caption ? existing.caption.replace(/"/g, "&quot;") : "";
+      if (hasUrl) row.dataset.url = existing.url;
+      row.innerHTML = `
+        <img class="photo-thumb" src="${hasUrl ? existing.url : ""}" style="display:${hasUrl ? "block" : "none"}" onclick="window.open(this.src,'_blank')" />
+        <div class="photo-mid">
+          <input type="file" accept="image/*" class="photo-file" style="display:none" />
+          <button type="button" class="pick-btn" onclick="this.previousElementSibling.click()">📷 ${hasUrl ? "Replace" : "Choose / Capture"}</button>
+          <input type="text" class="photo-caption" placeholder="Caption (optional)" value="${caption}" />
+          <span class="photo-status">${hasUrl ? "✓ Saved" : ""}</span>
+        </div>
+        <button type="button" class="remove-row-btn" onclick="this.closest('.photo-row').remove()">✕</button>
+      `;
+      const fileInput = row.querySelector(".photo-file");
+      fileInput.addEventListener("change", () => handlePhotoSelect(fileInput, row, category));
+      list.appendChild(row);
+    }
+
+    function buildPhotoRows(listId, category, jsonStr) {
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+      let arr = [];
+      try { arr = jsonStr ? JSON.parse(jsonStr) : []; } catch (e) { arr = []; }
+      arr.forEach(item => addPhotoRow(listId, category, item));
+    }
+
+    function handlePhotoSelect(input, rowEl, category) {
+      const file = input.files[0];
+      if (!file) return;
+      const statusEl = rowEl.querySelector(".photo-status");
+      statusEl.style.color = "#d97706";
+      statusEl.innerText = "Compressing...";
+      compressImage(file, 1200, 0.7).then(base64 => {
+        statusEl.innerText = "Uploading...";
+        const ticketId = document.getElementById("ticketIdHidden").value;
+        return fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "uploadPhoto", ticketId, category, base64, mimeType: "image/jpeg" })
+        }).then(r => r.json());
+      }).then(res => {
+        if (res.success) {
+          rowEl.dataset.url = res.url;
+          const thumb = rowEl.querySelector(".photo-thumb");
+          thumb.src = res.url; thumb.style.display = "block";
+          rowEl.querySelector(".pick-btn").innerText = "📷 Replace";
+          statusEl.style.color = "#15803d";
+          statusEl.innerText = "✓ Uploaded";
+        } else {
+          statusEl.style.color = "#dc2626";
+          statusEl.innerText = "❌ " + res.message;
+        }
+      }).catch(err => {
+        statusEl.style.color = "#dc2626";
+        statusEl.innerText = "❌ " + err.message;
+      });
+    }
+
+    function compressImage(file, maxDim, quality) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > h && w > maxDim)      { h = h * maxDim / w; w = maxDim; }
+            else if (h > maxDim)          { w = w * maxDim / h; h = maxDim; }
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function collectPhotos(listId) {
+      const arr = [];
+      document.querySelectorAll(`#${listId} .photo-row`).forEach(r => {
+        if (r.dataset.url)
+          arr.push({ url: r.dataset.url, caption: (r.querySelector(".photo-caption").value || "").trim() });
+      });
+      return JSON.stringify(arr);
+    }
+
+    // ---------- PAYMENT INSTALLMENTS ----------
+    function addPaymentRow(existing) {
+      const list  = document.getElementById("paymentList");
+      const modes = ["Cash", "UPI", "Bank Transfer", "Cheque", "Other"];
+      const sel   = existing && existing.mode ? existing.mode : "Cash";
+      const amt   = existing && existing.amount ? existing.amount : "";
+      const rem   = existing && existing.remarks ? existing.remarks.replace(/"/g, "&quot;") : "";
+      const date  = existing && existing.date ? existing.date : "";
+      const row = document.createElement("div");
+      row.className = "pay-row";
+      row.dataset.date = date;
+      row.innerHTML = `
+        <input type="number" class="pay-amt" min="0" placeholder="Amount ₹" value="${amt}" oninput="calcTotalPaid()" />
+        <select class="pay-mode">${modes.map(m => `<option ${m === sel ? "selected" : ""}>${m}</option>`).join("")}</select>
+        <input type="text" class="pay-remarks" placeholder="Remarks" value="${rem}" />
+        <span class="pay-date">${date || "new"}</span>
+        <button type="button" class="remove-row-btn" onclick="this.closest('.pay-row').remove(); calcTotalPaid();">✕</button>
+      `;
+      list.appendChild(row);
+      calcTotalPaid();
+    }
+
+    function buildPaymentRows(jsonStr) {
+      const list = document.getElementById("paymentList");
+      list.innerHTML = "";
+      let arr = [];
+      try { arr = jsonStr ? JSON.parse(jsonStr) : []; } catch (e) { arr = []; }
+      arr.forEach(p => addPaymentRow(p));
+    }
+
+    function collectPayments() {
+      const arr   = [];
+      const today = new Date().toLocaleDateString("en-GB");
+      document.querySelectorAll("#paymentList .pay-row").forEach(r => {
+        const amt = parseFloat(r.querySelector(".pay-amt").value) || 0;
+        if (amt <= 0) return;
+        arr.push({
+          amount:  amt,
+          mode:    r.querySelector(".pay-mode").value,
+          remarks: (r.querySelector(".pay-remarks").value || "").trim(),
+          date:    r.dataset.date && r.dataset.date !== "" ? r.dataset.date : today
+        });
+      });
+      return arr;
+    }
+
+    function calcTotalPaid() {
+      let total = 0;
+      document.querySelectorAll("#paymentList .pay-amt").forEach(el => total += parseFloat(el.value) || 0);
+      const disp = document.getElementById("totalPaidDisplay");
+      if (disp) disp.innerText = "₹" + total.toFixed(2);
+      return total;
+    }
+
+    function savePayment() {
+      const ticketId = document.getElementById("ticketIdHidden").value;
+      if (!ticketId) return;
+      const payments  = collectPayments();
+      const totalPaid = payments.reduce((s, p) => s + p.amount, 0);
+      const btn = document.getElementById("savePayBtn");
+      const msg = document.getElementById("payMsg");
+      btn.disabled = true; btn.innerText = "Saving...";
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "updatePayment", ticketId, payments: JSON.stringify(payments), totalPaid })
+      }).then(r => r.json()).then(res => {
+        if (!res.success) throw new Error(res.message);
+        showMsg(msg, "success", "Payment saved | Total Paid: ₹" + (res.totalPaid || totalPaid));
+        buildPaymentRows(JSON.stringify(payments));
+        calcTotalPaid();
+      }).catch(err => showMsg(msg, "error", "Error: " + err.message))
+        .finally(() => { btn.disabled = false; btn.innerText = "💾 Save Payment"; });
     }
 
     function showMsg(el, type, text) {
