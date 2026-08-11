@@ -84,11 +84,67 @@
       text-decoration:none; transition:.25s;
     }
     .new-ticket-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(21,128,61,.15); }
+
+    /* --- Photo rows --- */
+    .photo-list { display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
+    .photo-row {
+      display:flex; align-items:center; gap:10px;
+      background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; padding:10px;
+    }
+    .photo-thumb { width:52px; height:52px; object-fit:cover; border-radius:10px; border:1.5px solid #cbd5e1; cursor:pointer; flex-shrink:0; background:#eef2ff; }
+    .photo-mid { flex:1; display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .pick-btn {
+      width:auto; margin:0; padding:8px 12px; font-size:12px; border-radius:10px;
+      background:linear-gradient(135deg,#1e3a8a,#2563eb); box-shadow:none; align-self:flex-start; color:#fff;
+    }
+    .pick-btn:hover { transform:none; }
+    .photo-caption { padding:8px 10px; font-size:13px; border-radius:10px; }
+    .photo-status { font-size:11px; font-weight:800; color:#15803d; }
+    .add-row-btn {
+      width:auto; margin:4px 0 0; padding:9px 16px; font-size:13px; border-radius:12px;
+      background:linear-gradient(135deg,#0f172a,#334155); box-shadow:none; color:#fff;
+    }
+    .add-row-btn:hover { transform:none; }
+    .remove-row-btn {
+      width:34px; height:34px; margin:0; padding:0; border-radius:10px; flex-shrink:0;
+      background:#fef2f2; color:#dc2626; font-size:14px; box-shadow:none; border:1.5px solid #fecaca;
+    }
+    .remove-row-btn:hover { transform:none; background:#fee2e2; }
+
+    /* --- Payment section --- */
+    .pay-title { color:#7c3aed; }
+    .payment-box {
+      background:linear-gradient(135deg,#faf5ff,#f3e8ff);
+      border:1.5px solid #d8b4fe; border-radius:18px; padding:18px; margin-bottom:20px;
+    }
+    .pay-hint { font-size:12px; color:#7c3aed; font-weight:600; margin-bottom:14px; }
+    #paymentList { display:flex; flex-direction:column; gap:10px; }
+    .pay-row {
+      display:grid; grid-template-columns:1fr 1fr 1.4fr auto auto; gap:8px; align-items:center;
+      background:#fff; border:1.5px solid #e9d5ff; border-radius:12px; padding:10px;
+    }
+    .pay-row input, .pay-row select { padding:9px 10px; font-size:13px; border-radius:10px; }
+    .pay-date { font-size:11px; color:#7c3aed; font-weight:700; text-align:center; }
+    .pay-total-bar {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:14px; padding:12px 16px; background:#f3e8ff; border-radius:12px;
+      font-weight:900; color:#6b21a8; font-size:15px;
+    }
+    .save-pay-btn {
+      margin-top:12px; background:linear-gradient(135deg,#6b21a8,#7c3aed,#a855f7);
+      box-shadow:0 10px 24px rgba(124,58,237,.25); color:#fff;
+    }
+    #payMsg { margin-top:12px; }
+    #payMsg.success { display:block; padding:12px; border-radius:12px; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-weight:700; font-size:13px; }
+    #payMsg.error { display:block; padding:12px; border-radius:12px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; font-weight:700; font-size:13px; }
+
     @media(max-width:720px) {
       .ticket-info-bar { grid-template-columns:1fr 1fr; }
       .ticket-select-row { flex-direction:column; }
       .btn-load,.btn-go { width:100%; }
       .manual-row { flex-direction:column; }
+      .pay-row { grid-template-columns:1fr 1fr; }
+      .pay-date { grid-column:1 / -1; text-align:left; }
     }
   </style>
 </head>
@@ -436,8 +492,11 @@
       const hasUrl  = existing && existing.url;
       const caption = existing && existing.caption ? existing.caption.replace(/"/g, "&quot;") : "";
       if (hasUrl) row.dataset.url = existing.url;
+      if (existing && existing.viewUrl) row.dataset.viewUrl = existing.viewUrl;
       row.innerHTML = `
-        <img class="photo-thumb" src="${hasUrl ? existing.url : ""}" style="display:${hasUrl ? "block" : "none"}" onclick="window.open(this.src,'_blank')" />
+        <img class="photo-thumb" src="${hasUrl ? existing.url : ""}" style="display:${hasUrl ? "block" : "none"}"
+             onerror="this.style.opacity=.35;"
+             onclick="var v=this.closest('.photo-row').dataset.viewUrl||this.src; if(v) window.open(v,'_blank');" />
         <div class="photo-mid">
           <input type="file" accept="image/*" class="photo-file" style="display:none" />
           <button type="button" class="pick-btn" onclick="this.previousElementSibling.click()">📷 ${hasUrl ? "Replace" : "Choose / Capture"}</button>
@@ -463,9 +522,14 @@
       const file = input.files[0];
       if (!file) return;
       const statusEl = rowEl.querySelector(".photo-status");
+      const thumb    = rowEl.querySelector(".photo-thumb");
       statusEl.style.color = "#d97706";
       statusEl.innerText = "Compressing...";
       compressImage(file, 1200, 0.7).then(base64 => {
+        // instant local preview — koi wait nahi
+        thumb.src = "data:image/jpeg;base64," + base64;
+        thumb.style.opacity = 1;
+        thumb.style.display = "block";
         statusEl.innerText = "Uploading...";
         const ticketId = document.getElementById("ticketIdHidden").value;
         return fetch(API_URL, {
@@ -473,16 +537,15 @@
           body: JSON.stringify({ action: "uploadPhoto", ticketId, category, base64, mimeType: "image/jpeg" })
         }).then(r => r.json());
       }).then(res => {
-        if (res.success) {
-          rowEl.dataset.url = res.url;
-          const thumb = rowEl.querySelector(".photo-thumb");
-          thumb.src = res.url; thumb.style.display = "block";
+        if (res && res.success && res.url) {
+          rowEl.dataset.url     = res.url;
+          rowEl.dataset.viewUrl = res.viewUrl || res.url;
           rowEl.querySelector(".pick-btn").innerText = "📷 Replace";
           statusEl.style.color = "#15803d";
           statusEl.innerText = "✓ Uploaded";
         } else {
           statusEl.style.color = "#dc2626";
-          statusEl.innerText = "❌ " + res.message;
+          statusEl.innerText = "❌ " + ((res && res.message) || "Upload fail — GAS redeploy karo");
         }
       }).catch(err => {
         statusEl.style.color = "#dc2626";
@@ -516,7 +579,11 @@
       const arr = [];
       document.querySelectorAll(`#${listId} .photo-row`).forEach(r => {
         if (r.dataset.url)
-          arr.push({ url: r.dataset.url, caption: (r.querySelector(".photo-caption").value || "").trim() });
+          arr.push({
+            url:     r.dataset.url,
+            viewUrl: r.dataset.viewUrl || r.dataset.url,
+            caption: (r.querySelector(".photo-caption").value || "").trim()
+          });
       });
       return JSON.stringify(arr);
     }
