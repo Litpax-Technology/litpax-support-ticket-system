@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advance Given — Litpax Support</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .nav-bar { display:flex; gap:10px; margin-bottom:22px; }
+    .nav-btn {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:10px 20px; border-radius:12px; font-size:13px;
+      font-weight:800; text-decoration:none; transition:.2s;
+      border:1.5px solid #e2e8f0; background:#f8fafc; color:#334155;
+    }
+    .nav-btn:hover { background:#e2e8f0; transform:translateY(-1px); }
+
+    .adv-title { color:#7c3aed; }
+    .adv-box {
+      background:linear-gradient(135deg,#faf5ff,#f3e8ff);
+      border:1.5px solid #d8b4fe; border-radius:18px; padding:18px; margin-bottom:20px;
+    }
+    .emp-total-banner {
+      display:none; align-items:center; justify-content:space-between; gap:12px;
+      background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1.5px solid #93c5fd;
+      border-radius:16px; padding:14px 18px; margin-bottom:18px;
+    }
+    .emp-total-banner .etb-left h4 { color:#1e40af; font-size:14px; font-weight:900; margin-bottom:2px; }
+    .emp-total-banner .etb-left p  { color:#3b82f6; font-size:12px; font-weight:600; }
+    .emp-total-banner .etb-amt { font-size:22px; font-weight:900; color:#1e3a8a; white-space:nowrap; }
+
+    .adv-history { display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    .adv-row {
+      display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;
+      background:#fff; border:1.5px solid #e9d5ff; border-radius:12px; padding:12px 14px;
+    }
+    .adv-row .adv-date { font-size:12px; color:#7c3aed; font-weight:800; white-space:nowrap; }
+    .adv-row .adv-rem  { font-size:13px; color:#475569; font-weight:600; }
+    .adv-row .adv-amt  { font-size:16px; color:#15803d; font-weight:900; white-space:nowrap; }
+    .adv-empty { text-align:center; color:#94a3b8; font-size:13px; font-weight:700; padding:16px 0; }
+    .adv-total-bar {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:14px; padding:12px 16px; background:#f3e8ff; border-radius:12px;
+      font-weight:900; color:#6b21a8; font-size:16px;
+    }
+    .add-adv-btn {
+      margin-top:6px; background:linear-gradient(135deg,#6b21a8,#7c3aed,#a855f7);
+      box-shadow:0 10px 24px rgba(124,58,237,.25); color:#fff;
+    }
+    .load-btn { width:auto; margin-top:0; padding:14px 22px; border-radius:16px; font-size:14px; white-space:nowrap; }
+    #advMsg { margin-top:12px; }
+    #advMsg.success { display:block; padding:12px; border-radius:12px; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-weight:700; font-size:13px; }
+    #advMsg.error   { display:block; padding:12px; border-radius:12px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; font-weight:700; font-size:13px; }
+    .emp-row { display:flex; gap:10px; align-items:flex-end; }
+    .emp-row .form-group { flex:1; margin:0; }
+    @media(max-width:720px){ .emp-row { flex-direction:column; align-items:stretch; } .load-btn { width:100%; } }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <div class="form-card">
+
+      <div class="nav-bar">
+        <a href="index.html" class="nav-btn">🏠 Home</a>
+        <a href="update.html" class="nav-btn">＋ New Ticket</a>
+      </div>
+
+      <div class="form-header">
+        <div>
+          <h1>Advance Given</h1>
+          <p>Field jaane se pehle technician ko diya gaya advance record karo</p>
+        </div>
+        <span>Owner Only</span>
+      </div>
+
+      <!-- STEP 1: employee load -->
+      <div class="section-title">Employee</div>
+      <div class="emp-row">
+        <div class="form-group">
+          <label>Employee ID</label>
+          <input type="text" id="empId" placeholder="e.g. EMP-001" style="text-transform:uppercase" />
+        </div>
+        <button class="load-btn" onclick="loadEmployee()">🔍 Load</button>
+      </div>
+      <div class="form-group" style="margin-top:12px;">
+        <label>Employee Name</label>
+        <input type="text" id="empName" placeholder="Auto-fills from master, ya khud bhi likh sakte ho" />
+      </div>
+
+      <!-- running total banner -->
+      <div class="emp-total-banner" id="empTotalBanner" style="margin-top:16px;">
+        <div class="etb-left">
+          <h4 id="etbName">—</h4>
+          <p>Total advance taken till now</p>
+        </div>
+        <div class="etb-amt" id="etbAmt">₹0</div>
+      </div>
+
+      <!-- STEP 2: add advance -->
+      <div class="section-title adv-title">Give New Advance</div>
+      <div class="adv-box">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Amount (₹)</label>
+            <input type="number" id="advAmount" min="0" placeholder="e.g. 1000" />
+          </div>
+          <div class="form-group">
+            <label>Remarks (optional)</label>
+            <input type="text" id="advRemarks" placeholder="e.g. Sirsa trip advance" />
+          </div>
+        </div>
+        <button class="add-adv-btn" id="addAdvBtn" onclick="addAdvance()">💵 Add Advance</button>
+        <div id="advMsg"></div>
+      </div>
+
+      <!-- history -->
+      <div class="section-title adv-title">Advance History</div>
+      <div id="advHistory" class="adv-history">
+        <div class="adv-empty">Employee load karo to history yahan dikhegi.</div>
+      </div>
+      <div class="adv-total-bar">
+        <span>Total Advance:</span>
+        <span id="advTotalDisplay">₹0</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzAkWgIEnlulFwykP6AxtL9nnG1an_oMsXz63Sgt-8xvCuP53WGS3QBbFE7okXrsp4w/exec";
+
+    // ---------- API HELPERS WITH AUTO-RETRY ----------
+    // GAS ka /exec kabhi-kabhi googleusercontent redirect pe 404 deta hai (JSON ki jagah HTML).
+    // Fail hone pe chupchaap 2-3 baar retry — "not valid JSON" wala random fail khatam.
+    async function apiCall(options, retries = 3) {
+      let lastErr;
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const res  = await fetch(options.url, options.init || {});
+          const text = await res.text();
+          if (text.trim().charAt(0) === "<") throw new Error("GAS hiccup (HTML response)");
+          return JSON.parse(text);
+        } catch (err) {
+          lastErr = err;
+          if (attempt < retries) await new Promise(r => setTimeout(r, 700 * attempt));
+        }
+      }
+      throw lastErr;
+    }
+    function apiGet(params)   { return apiCall({ url: `${API_URL}?${params}` }); }
+    function apiPost(payload) { return apiCall({ url: API_URL, init: { method: "POST", body: JSON.stringify(payload) } }); }
+
+    const $ = id => document.getElementById(id);
+    const currentEmpId = () => $("empId").value.trim().toUpperCase();
+
+    // ---------- LOAD EMPLOYEE + HISTORY ----------
+    async function loadEmployee() {
+      const empId = currentEmpId();
+      const msg   = $("advMsg");
+      msg.className = ""; msg.style.display = "none";
+      if (!empId) { showMsg("error", "Pehle Employee ID daalo"); return; }
+
+      try {
+        const emp = await apiGet(`action=getEmployee&empId=${encodeURIComponent(empId)}`);
+        if (emp.success && emp.empName) {
+          $("empName").value = emp.empName;
+        } else {
+          showMsg("error", "⚠️ Employee master me nahi mila. Naam khud likh do, advance phir bhi save hoga.");
+        }
+        await refreshAdvances(empId);
+      } catch (err) {
+        showMsg("error", "Error: " + err.message);
+      }
+    }
+
+    async function refreshAdvances(empId) {
+      const data  = await apiGet(`action=getAdvances&empId=${encodeURIComponent(empId)}`);
+      const list  = (data && data.success && data.advances) ? data.advances : [];
+      const total = (data && data.totalAdvance) ? data.totalAdvance : 0;
+      renderAdvances(list, total, $("empName").value || empId);
+    }
+
+    function renderAdvances(list, total, name) {
+      const box = $("advHistory");
+      box.innerHTML = "";
+      if (!list.length) {
+        box.innerHTML = `<div class="adv-empty">Is employee ka koi advance record nahi.</div>`;
+      } else {
+        list.slice().reverse().forEach(a => {
+          const row = document.createElement("div");
+          row.className = "adv-row";
+          row.innerHTML = `
+            <span class="adv-date">${a.date || "—"}</span>
+            <span class="adv-rem">${a.remarks ? a.remarks : "<i style='color:#cbd5e1'>No remarks</i>"}</span>
+            <span class="adv-amt">₹${(parseFloat(a.amount) || 0).toFixed(2)}</span>
+          `;
+          box.appendChild(row);
+        });
+      }
+      $("advTotalDisplay").innerText = "₹" + (parseFloat(total) || 0).toFixed(2);
+
+      const banner = $("empTotalBanner");
+      banner.style.display = "flex";
+      $("etbName").innerText = name || "—";
+      $("etbAmt").innerText  = "₹" + (parseFloat(total) || 0).toFixed(2);
+    }
+
+    // ---------- ADD ADVANCE ----------
+    async function addAdvance() {
+      const empId  = currentEmpId();
+      const amount = parseFloat($("advAmount").value) || 0;
+      const btn    = $("addAdvBtn");
+      const msg    = $("advMsg");
+      msg.className = ""; msg.style.display = "none";
+
+      if (!empId)      { showMsg("error", "Employee ID daalo"); return; }
+      if (amount <= 0) { showMsg("error", "Valid amount daalo"); return; }
+
+      btn.disabled = true; btn.innerText = "Saving...";
+      try {
+        const res = await apiPost({
+          action:  "addAdvance",
+          empId:   empId,
+          empName: $("empName").value.trim(),
+          amount:  amount,
+          remarks: $("advRemarks").value.trim()
+        });
+        if (!res.success) throw new Error(res.message || "Save fail");
+
+        $("advAmount").value  = "";
+        $("advRemarks").value = "";
+        renderAdvances(res.advances || [], res.totalAdvance || 0, $("empName").value || empId);
+        showMsg("success", "✅ Advance saved | Total: ₹" + (parseFloat(res.totalAdvance) || 0).toFixed(2));
+      } catch (err) {
+        showMsg("error", "Error: " + err.message);
+      } finally {
+        btn.disabled = false; btn.innerText = "💵 Add Advance";
+      }
+    }
+
+    function showMsg(type, text) {
+      const el = $("advMsg");
+      el.className = type; el.innerText = text; el.style.display = "block";
+    }
+
+    $("empId").addEventListener("keydown", e => { if (e.key === "Enter") loadEmployee(); });
+  </script>
+</body>
+</html>
