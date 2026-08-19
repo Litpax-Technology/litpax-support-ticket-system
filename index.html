@@ -83,7 +83,12 @@
       border-radius:18px; color:#15803d; font-weight:900; font-size:15px;
       text-decoration:none; transition:.25s;
     }
-    .new-ticket-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(21,128,61,.15); }
+        .new-ticket-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(21,128,61,.15); }
+    .saved-exp {
+      display:inline-block; margin-top:6px; font-size:12px; font-weight:800;
+      color:#15803d; background:#f0fdf4; border:1px solid #bbf7d0;
+      padding:3px 10px; border-radius:999px;
+    }
 
     /* --- Photo rows --- */
     .photo-list { display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
@@ -241,26 +246,26 @@
           <div class="section-title expense-title">Expense Details</div>
           <div class="expense-box">
             <div class="form-grid">
+                            <div class="form-group">
+                <label>🚗 Travel Expense (₹)</label>
+                <input type="number" id="travelExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+                <span class="saved-exp" id="travelSaved" data-val="0">Saved: ₹0.00</span>
+              </div>
               <div class="form-group">
-  <label>🚗 Travel Expense (₹)</label>
-  <input type="number" id="travelExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
-  <span class="saved-exp" id="travelSaved" data-val="0">Saved: ₹0.00</span>
-</div>
-<div class="form-group">
-  <label>🍽️ Food Expense (₹)</label>
-  <input type="number" id="foodExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
-  <span class="saved-exp" id="foodSaved" data-val="0">Saved: ₹0.00</span>
-</div>
-<div class="form-group">
-  <label>🔧 Parts / Material Expense (₹)</label>
-  <input type="number" id="partsExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
-  <span class="saved-exp" id="partsSaved" data-val="0">Saved: ₹0.00</span>
-</div>
-<div class="form-group">
-  <label>📦 Other Expense (₹)</label>
-  <input type="number" id="otherExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
-  <span class="saved-exp" id="otherSaved" data-val="0">Saved: ₹0.00</span>
-</div>
+                <label>🍽️ Food Expense (₹)</label>
+                <input type="number" id="foodExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+                <span class="saved-exp" id="foodSaved" data-val="0">Saved: ₹0.00</span>
+              </div>
+              <div class="form-group">
+                <label>🔧 Parts / Material Expense (₹)</label>
+                <input type="number" id="partsExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+                <span class="saved-exp" id="partsSaved" data-val="0">Saved: ₹0.00</span>
+              </div>
+              <div class="form-group">
+                <label>📦 Other Expense (₹)</label>
+                <input type="number" id="otherExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+                <span class="saved-exp" id="otherSaved" data-val="0">Saved: ₹0.00</span>
+              </div>
               <div class="form-group full">
                 <label>💰 Total Expense (₹)</label>
                 <input type="text" id="totalExpenseDisplay" readonly placeholder="Auto calculated" />
