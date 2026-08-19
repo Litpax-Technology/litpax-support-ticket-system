@@ -242,21 +242,25 @@
           <div class="expense-box">
             <div class="form-grid">
               <div class="form-group">
-                <label>🚗 Travel Expense (₹)</label>
-                <input type="number" id="travelExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group">
-                <label>🍽️ Food Expense (₹)</label>
-                <input type="number" id="foodExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group">
-                <label>🔧 Parts / Material Expense (₹)</label>
-                <input type="number" id="partsExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
-              <div class="form-group">
-                <label>📦 Other Expense (₹)</label>
-                <input type="number" id="otherExpense" min="0" placeholder="0" oninput="calcUpdateTotal()" />
-              </div>
+  <label>🚗 Travel Expense (₹)</label>
+  <input type="number" id="travelExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+  <span class="saved-exp" id="travelSaved" data-val="0">Saved: ₹0.00</span>
+</div>
+<div class="form-group">
+  <label>🍽️ Food Expense (₹)</label>
+  <input type="number" id="foodExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+  <span class="saved-exp" id="foodSaved" data-val="0">Saved: ₹0.00</span>
+</div>
+<div class="form-group">
+  <label>🔧 Parts / Material Expense (₹)</label>
+  <input type="number" id="partsExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+  <span class="saved-exp" id="partsSaved" data-val="0">Saved: ₹0.00</span>
+</div>
+<div class="form-group">
+  <label>📦 Other Expense (₹)</label>
+  <input type="number" id="otherExpense" min="0" placeholder="+ Add amount" oninput="calcUpdateTotal()" />
+  <span class="saved-exp" id="otherSaved" data-val="0">Saved: ₹0.00</span>
+</div>
               <div class="form-group full">
                 <label>💰 Total Expense (₹)</label>
                 <input type="text" id="totalExpenseDisplay" readonly placeholder="Auto calculated" />
@@ -433,13 +437,15 @@
       document.getElementById("roBatteryModel").value   = t.batteryModel;
       document.getElementById("roProblemDetails").value = t.problemDetails;
       document.getElementById("partsChanged").value     = t.partsChanged   || "";
-      document.getElementById("travelExpense").value    = t.travelExpense  || "";
-      document.getElementById("foodExpense").value      = t.foodExpense    || "";
-      document.getElementById("partsExpense").value     = t.partsExpense   || "";
-      document.getElementById("otherExpense").value     = t.otherExpense   || "";
-      document.getElementById("expenseRemarks").value   = t.expenseRemarks || "";
-      document.getElementById("remarks").value          = t.remarks        || "";
-      calcUpdateTotal();
+      // expense inputs ab "add amount" ke liye — khali rakho, saved value badge me
+document.getElementById("travelExpense").value = "";
+document.getElementById("foodExpense").value   = "";
+document.getElementById("partsExpense").value  = "";
+document.getElementById("otherExpense").value  = "";
+setSavedExpenses(t);
+document.getElementById("expenseRemarks").value   = t.expenseRemarks || "";
+document.getElementById("remarks").value          = t.remarks        || "";
+calcUpdateTotal();
 
       buildPhotoRows("expensePhotoList", "expense", t.expensePhotos);
       buildPhotoRows("partsPhotoList",   "parts",   t.partsPhotos);
@@ -453,14 +459,31 @@
         .forEach(el => el.disabled = shouldLock);
     }
 
-    function calcUpdateTotal() {
-      const t = parseFloat(document.getElementById("travelExpense").value) || 0;
-      const f = parseFloat(document.getElementById("foodExpense").value)   || 0;
-      const p = parseFloat(document.getElementById("partsExpense").value)  || 0;
-      const o = parseFloat(document.getElementById("otherExpense").value)  || 0;
-      const total = t + f + p + o;
-      document.getElementById("totalExpenseDisplay").value = total > 0 ? "₹" + total.toFixed(2) : "";
-    }
+    function setSavedExpenses(t) {
+  const map = {
+    travel: parseFloat(t.travelExpense) || 0,
+    food:   parseFloat(t.foodExpense)   || 0,
+    parts:  parseFloat(t.partsExpense)  || 0,
+    other:  parseFloat(t.otherExpense)  || 0
+  };
+  Object.keys(map).forEach(c => {
+    const el = document.getElementById(c + "Saved");
+    el.dataset.val = map[c];
+    el.textContent = "Saved: ₹" + map[c].toFixed(2);
+  });
+}
+
+// Total = har category ka (saved + jo abhi add kar rahe ho) — live preview
+function calcUpdateTotal() {
+  const cats = ["travel", "food", "parts", "other"];
+  let grand = 0;
+  cats.forEach(c => {
+    const saved = parseFloat(document.getElementById(c + "Saved").dataset.val) || 0;
+    const add   = parseFloat(document.getElementById(c + "Expense").value)     || 0;
+    grand += saved + add;
+  });
+  document.getElementById("totalExpenseDisplay").value = grand > 0 ? "₹" + grand.toFixed(2) : "";
+}
 
     async function saveTicket(isFinal) {
       const ticketId = document.getElementById("ticketIdHidden").value;
@@ -490,8 +513,15 @@
 
       try {
         const result = await apiPost(payload);
-        if (!result.success) throw new Error(result.message);
-        showMsg(msg, "success", result.message + (result.total ? ` | Total: ₹${result.total}` : ""));
+if (!result.success) throw new Error(result.message);
+
+// naya accumulated total badge me + add-input khali
+if (result.expenses) setSavedExpenses(result.expenses);
+["travelExpense","foodExpense","partsExpense","otherExpense"]
+  .forEach(id => document.getElementById(id).value = "");
+calcUpdateTotal();
+
+showMsg(msg, "success", result.message + (result.total ? ` | Total: ₹${result.total}` : ""));
         if (isFinal) {
           document.getElementById("updateForm")
             .querySelectorAll("input:not([readonly]),textarea,button")
