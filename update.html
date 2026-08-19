@@ -194,6 +194,26 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzAkWgIEnlulFwykP6AxtL9nnG1an_oMsXz63Sgt-8xvCuP53WGS3QBbFE7okXrsp4w/exec";
+
+    // ---------- API HELPER WITH AUTO-RETRY ----------
+    // GAS ka /exec kabhi-kabhi googleusercontent redirect pe 404 deta hai (JSON ki jagah HTML).
+    // Fail hone pe chupchaap 2-3 baar retry — "not valid JSON" wala random fail khatam.
+    async function apiPost(payload, retries = 3) {
+      let lastErr;
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const res  = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+          const text = await res.text();
+          if (text.trim().charAt(0) === "<") throw new Error("GAS hiccup (HTML response)");
+          return JSON.parse(text);
+        } catch (err) {
+          lastErr = err;
+          if (attempt < retries) await new Promise(r => setTimeout(r, 700 * attempt));
+        }
+      }
+      throw lastErr;
+    }
+
     const form      = document.getElementById("supportForm");
     const submitBtn = document.getElementById("submitBtn");
     const errorBox  = document.getElementById("errorBox");
@@ -226,8 +246,7 @@
       };
 
       try {
-        const res    = await fetch(API_URL, { method:"POST", body: JSON.stringify(data) });
-        const result = await res.json();
+        const result = await apiPost(data);
         if (result.success) {
           form.style.display        = "none";
           document.querySelector(".form-header").style.display = "none";
