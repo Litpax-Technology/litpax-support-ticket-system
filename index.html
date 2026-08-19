@@ -191,7 +191,8 @@
       <div id="searchMsg"></div>
 
       <div id="ticketSection" class="hidden">
-        <div class="ticket-info-bar" id="infoBar"></div>
+                <div class="ticket-info-bar" id="infoBar"></div>
+        <div id="advanceInfoUpdate" class="advance-info" style="display:none"></div>
 
         <div id="pendingOverlay" class="pending-overlay hidden">
           <div class="pending-icon">⏳</div>
@@ -429,6 +430,7 @@
         <div class="info-item"><label>Location</label><span>${t.location}</span></div>
       `;
 
+            loadTicketAdvance(t.empId);
       document.getElementById("pendingOverlay").classList.toggle("hidden", !isPending);
 
       if (t.assignedTo && t.assignedTo !== "") {
@@ -740,6 +742,23 @@ showMsg(msg, "success", result.message + (result.total ? ` | Total: ₹${result.
         if (opt) { sel.value = uid; clearInterval(trySelect); }
       }, 100);
       setTimeout(() => { clearInterval(trySelect); doFetch(uid); }, 1500);
+    }
+
+        async function loadTicketAdvance(empId) {
+      const box = document.getElementById("advanceInfoUpdate");
+      if (!empId) { box.style.display = "none"; return; }
+      try {
+        const data  = await apiGet(`action=getAdvances&empId=${encodeURIComponent(empId)}`);
+        const total = (data && data.totalAdvance) ? data.totalAdvance : 0;
+        box.style.display = "flex";
+        if (total > 0) {
+          box.className = "advance-info";
+          box.innerHTML = `<span>💰 ${empId} — Total Advance Taken</span><span class="ai-amt">₹${total.toFixed(2)}</span>`;
+        } else {
+          box.className = "advance-info warn";
+          box.innerHTML = `<span>ℹ️ ${empId} ka koi advance record nahi</span>`;
+        }
+      } catch (err) { box.style.display = "none"; }
     }
   </script>
 </body>
