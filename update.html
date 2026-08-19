@@ -239,7 +239,15 @@
           const eRes  = await fetch(`${API_URL}?action=getEmployee&empId=${encodeURIComponent(empId)}`);
           const eData = JSON.parse(await eRes.text());
           const nameInput = document.getElementById("technicianName");
-          if (eData.success && eData.empName && !nameInput.value.trim()) nameInput.value = eData.empName;
+                    if (eData.success && eData.empName) {
+            nameInput.value    = eData.empName;
+            nameInput.readOnly = true;
+            nameInput.style.background = "#f8fafc";
+          } else {
+            nameInput.value    = "";
+            nameInput.readOnly = false;
+            nameInput.style.background = "";
+          }
         } catch (e) {}
 
         const res  = await fetch(`${API_URL}?action=getAdvances&empId=${encodeURIComponent(empId)}`);
