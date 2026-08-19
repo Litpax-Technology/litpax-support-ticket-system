@@ -58,10 +58,18 @@
     .help-option.sel-no  .dot { border-color:#15803d; background:#15803d; }
     .help-option.sel-yes .dot { border-color:#2563eb; background:#2563eb; }
     .help-option.sel-no  .dot::after,
-    .help-option.sel-yes .dot::after {
+        .help-option.sel-yes .dot::after {
       content:''; position:absolute; top:4px; left:4px;
       width:8px; height:8px; border-radius:50%; background:#fff;
     }
+    .advance-info {
+      background:linear-gradient(135deg,#eff6ff,#dbeafe);
+      border:1.5px solid #93c5fd; border-radius:14px; padding:12px 16px;
+      font-size:14px; font-weight:800; color:#1e40af;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .advance-info .ai-amt { font-size:18px; font-weight:900; color:#1e3a8a; }
+    .advance-info.warn { background:#fffbeb; border-color:#fde68a; color:#92400e; }
   </style>
 </head>
 <body>
@@ -82,15 +90,23 @@
 
       <form id="supportForm">
 
-        <div class="section-title">Technician Details</div>
+                <div class="section-title">Technician Details</div>
         <div class="form-grid">
           <div class="form-group">
+            <label>Employee ID</label>
+            <input type="text" name="empId" id="empId" placeholder="e.g. EMP-001"
+                   style="text-transform:uppercase" onblur="loadEmpAdvance()" />
+          </div>
+          <div class="form-group">
             <label>Technician Name</label>
-            <input type="text" name="technicianName" required />
+            <input type="text" name="technicianName" id="technicianName" required />
           </div>
           <div class="form-group">
             <label>Technician Mobile</label>
             <input type="tel" name="technicianMobile" required />
+          </div>
+          <div class="form-group full">
+            <div id="advanceInfo" class="advance-info" style="display:none"></div>
           </div>
         </div>
 
@@ -211,7 +227,34 @@
           if (attempt < retries) await new Promise(r => setTimeout(r, 700 * attempt));
         }
       }
-      throw lastErr;
+            throw lastErr;
+    }
+
+    async function loadEmpAdvance() {
+      const empId = document.getElementById("empId").value.trim().toUpperCase();
+      const box   = document.getElementById("advanceInfo");
+      if (!empId) { box.style.display = "none"; return; }
+      try {
+        try {
+          const eRes  = await fetch(`${API_URL}?action=getEmployee&empId=${encodeURIComponent(empId)}`);
+          const eData = JSON.parse(await eRes.text());
+          const nameInput = document.getElementById("technicianName");
+          if (eData.success && eData.empName && !nameInput.value.trim()) nameInput.value = eData.empName;
+        } catch (e) {}
+
+        const res  = await fetch(`${API_URL}?action=getAdvances&empId=${encodeURIComponent(empId)}`);
+        const data = JSON.parse(await res.text());
+        const total = (data && data.totalAdvance) ? data.totalAdvance : 0;
+
+        box.style.display = "flex";
+        if (total > 0) {
+          box.className = "advance-info";
+          box.innerHTML = `<span>💰 Total Advance Taken</span><span class="ai-amt">₹${total.toFixed(2)}</span>`;
+        } else {
+          box.className = "advance-info warn";
+          box.innerHTML = `<span>ℹ️ Is Emp ID ka koi advance record nahi</span>`;
+        }
+      } catch (err) { box.style.display = "none"; }
     }
 
     const form      = document.getElementById("supportForm");
@@ -230,7 +273,8 @@
       submitBtn.innerText = "Submitting...";
       errorBox.style.display = "none";
 
-      const data = {
+            const data = {
+        empId:             form.empId.value.trim().toUpperCase(),
         technicianName:    form.technicianName.value.trim(),
         technicianMobile:  form.technicianMobile.value.trim(),
         customerName:      form.customerName.value.trim(),
